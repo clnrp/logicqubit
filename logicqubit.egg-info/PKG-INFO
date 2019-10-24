@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: logicqubit
+Version: 1.2.7
+Summary: logicqubit is a simple library for quantum computing simulation
+Home-page: https://github.com/clnrp/logicqubit
+Author: Cleoner Pietralonga
+Author-email: cleonerp@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Description-Content-Type: text/markdown

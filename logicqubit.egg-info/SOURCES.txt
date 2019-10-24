@@ -1,0 +1,12 @@
+README.rst
+setup.py
+logicqubit/__init__.py
+logicqubit/__main__.py
+logicqubit/circuit.py
+logicqubit/gates.py
+logicqubit/logic.py
+logicqubit.egg-info/PKG-INFO
+logicqubit.egg-info/SOURCES.txt
+logicqubit.egg-info/dependency_links.txt
+logicqubit.egg-info/requires.txt
+logicqubit.egg-info/top_level.txt
