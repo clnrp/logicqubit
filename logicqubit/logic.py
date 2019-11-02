@@ -14,6 +14,8 @@ class LogicQuBit:
 
     def __init__(self, num = 3):
         self.num = num
+        self.measured_qubit = []
+        self.measured_value = {}
         self.phi = self.product([self.ket(0) for i in range(num)])
 
     def onehot(self, i, value):
@@ -98,7 +100,9 @@ class LogicQuBit:
         P1 = self.product(list)
         measure_0 = (density_m*P0).trace()
         measure_1 = (density_m*P1).trace()
-        return measure_0, measure_1
+        self.measured_qubit.append(p)
+        self.measured_value[p]=[measure_0, measure_1]
+        return [measure_0, measure_1]
 
     def Pure(self):
         density_m = self.DensityMatrix()
