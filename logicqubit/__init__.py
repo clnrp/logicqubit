@@ -4,6 +4,6 @@ from logicqubit import hilbert
 from logicqubit import utils
 from logicqubit import circuit
 
-__version__ = "1.2.7"
+__version__ = "1.2.8"
 
 print("logicqubit version "+__version__)

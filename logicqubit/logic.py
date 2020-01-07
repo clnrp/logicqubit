@@ -61,6 +61,23 @@ class LogicQuBit:
                 list2.append(eye(2))
         return list1, list2
 
+    def getOrdListCtrl2Gate(self, control1, control2, target, Gate):
+        kb0 = Matrix([[1, 0], [0, 0]]) # |0><0|
+        kb1 = Matrix([[0, 0], [0, 1]]) # |1><1|
+        list1 = []
+        list2 = []
+        for i in range(1,self.num+1):
+            if i == control1 or i == control2:
+                list1.append(kb0)
+                list2.append(kb1)
+            elif i == target:
+                list1.append(eye(2))
+                list2.append(Gate)
+            else:
+                list1.append(eye(2))
+                list2.append(eye(2))
+        return list1, list2
+
     def X(self, target):
         X = Matrix([[0, 1], [1, 0]])
         list = self.getOrdListSimpleGate(target, X)
@@ -105,10 +122,13 @@ class LogicQuBit:
 
     def CCX(self, control1, control2, target):
         X = Matrix([[0, 1], [1, 0]])
-        list1,list2 = self.getOrdListCtrlGate(control1, target, X)
+        list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, X)
         product = self.product(list1) + self.product(list2)
         self.phi = product*self.phi
         return self.phi
+
+    def Toffoli(self, control1, control2, target):
+        return self.CCX(control1, control2, target)
 
     def DensityMatrix(self):
         density_m = self.phi*self.phi.adjoint() # |phi><phi|
