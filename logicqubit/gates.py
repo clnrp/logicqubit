@@ -31,10 +31,10 @@ class Gates:
         M = Matrix([[0, 1], [1, 0]])
         return M
 
-    def KetBra0(self):
+    def P0(self):
         M = Matrix([[1, 0], [0, 0]])  # |0><0|
         return M
 
-    def KetBra1(self):
+    def P1(self):
         M = Matrix([[1, 0], [0, 0]])  # |1><1|
         return M

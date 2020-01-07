@@ -45,14 +45,14 @@ class LogicQuBit:
         return list
 
     def getOrdListCtrlGate(self, control, target, Gate):
-        kb0 = Matrix([[1, 0], [0, 0]]) # |0><0|
-        kb1 = Matrix([[0, 0], [0, 1]]) # |1><1|
+        P0 = Matrix([[1, 0], [0, 0]]) # |0><0|
+        P1 = Matrix([[0, 0], [0, 1]]) # |1><1|
         list1 = []
         list2 = []
         for i in range(1,self.num+1):
             if i == control:
-                list1.append(kb0)
-                list2.append(kb1)
+                list1.append(P0)
+                list2.append(P1)
             elif i == target:
                 list1.append(eye(2))
                 list2.append(Gate)
@@ -62,14 +62,14 @@ class LogicQuBit:
         return list1, list2
 
     def getOrdListCtrl2Gate(self, control1, control2, target, Gate):
-        kb0 = Matrix([[1, 0], [0, 0]]) # |0><0|
-        kb1 = Matrix([[0, 0], [0, 1]]) # |1><1|
+        P0 = Matrix([[1, 0], [0, 0]]) # |0><0|
+        P1 = Matrix([[0, 0], [0, 1]]) # |1><1|
         list1 = []
         list2 = []
         for i in range(1,self.num+1):
             if i == control1 or i == control2:
                 list1.append(eye(2))
-                list2.append(kb1)
+                list2.append(P1)
             elif i == target:
                 list1.append(eye(2))
                 list2.append(Gate)
@@ -136,12 +136,12 @@ class LogicQuBit:
         return density_m
 
     def Measure2(self, target):
-        kb0 = Matrix([[1, 0], [0, 0]]) # |0><0|
-        kb1 = Matrix([[0, 0], [0, 1]]) # |1><1|
+        P0 = Matrix([[1, 0], [0, 0]]) # |0><0|
+        P1 = Matrix([[0, 0], [0, 1]]) # |1><1|
         density_m = self.DensityMatrix()
-        list = self.getOrdListSimpleGate(target, kb0)
+        list = self.getOrdListSimpleGate(target, P0)
         P0 = self.product(list)
-        list = self.getOrdListSimpleGate(target, kb1)
+        list = self.getOrdListSimpleGate(target, P1)
         P1 = self.product(list)
         measure_0 = (density_m*P0).trace()
         measure_1 = (density_m*P1).trace()
@@ -150,8 +150,8 @@ class LogicQuBit:
         return [measure_0, measure_1]
 
     def Measure(self, target):
-        kb0 = Matrix([[1, 0], [0, 0]])  # |0><0|
-        kb1 = Matrix([[0, 0], [0, 1]])  # |1><1|
+        P0 = Matrix([[1, 0], [0, 0]])  # |0><0|
+        P1 = Matrix([[0, 0], [0, 1]])  # |1><1|
         target.sort()
         self.measured_qubits = target
         density_m = self.DensityMatrix()
@@ -165,9 +165,9 @@ class LogicQuBit:
             for j in range(self.num):
                 if j + 1 == target[cnt]:
                     if blist[cnt] == 0:
-                        tlist[j] = kb0
+                        tlist[j] = P0
                     else:
-                        tlist[j] = kb1
+                        tlist[j] = P1
                     cnt += 1
                     if (cnt >= size_p):
                         break
