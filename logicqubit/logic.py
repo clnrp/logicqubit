@@ -68,7 +68,7 @@ class LogicQuBit:
         list2 = []
         for i in range(1,self.num+1):
             if i == control1 or i == control2:
-                list1.append(kb0)
+                list1.append(eye(2))
                 list2.append(kb1)
             elif i == target:
                 list1.append(eye(2))
@@ -122,7 +122,8 @@ class LogicQuBit:
 
     def CCX(self, control1, control2, target):
         X = Matrix([[0, 1], [1, 0]])
-        list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, X)
+        Gate = X-eye(2)
+        list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
         product = self.product(list1) + self.product(list2)
         self.phi = product*self.phi
         return self.phi

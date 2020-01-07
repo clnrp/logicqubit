@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-# phase kickback
-
 from logicqubit.logic import *
 
 logicQuBit  = LogicQuBit(2)
