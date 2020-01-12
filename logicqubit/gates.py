@@ -9,32 +9,46 @@ from sympy import *
 from sympy.physics.quantum import TensorProduct
 from sympy.physics.quantum import tensor_product_simp
 from sympy.physics.quantum import Dagger
+from cmath import *
 
 class Gates:
-    def X(self):
+
+    @staticmethod
+    def X():
         M = Matrix([[0, 1], [1, 0]])
         return M
 
-    def Y(self):
+    @staticmethod
+    def Y():
         M = Matrix([[0,-I], [I,0]])
         return M
 
-    def Z(self):
+    @staticmethod
+    def Z():
         M = Matrix([[1,0], [0,-1]])
         return M
 
-    def H(self, p):
+    @staticmethod
+    def H():
         M = 1 / sqrt(2) * Matrix([[1, 1], [1, -1]])
         return M
 
-    def CNOT(self, p1, p2):
+    @staticmethod
+    def CNOT():
         M = Matrix([[0, 1], [1, 0]])
         return M
 
-    def P0(self):
+    @staticmethod
+    def U1(_lambda):
+        M = Matrix([[1, 0], [0, exp(I*_lambda)]])
+        return M
+
+    @staticmethod
+    def P0():
         M = Matrix([[1, 0], [0, 0]])  # |0><0|
         return M
 
-    def P1(self):
-        M = Matrix([[1, 0], [0, 0]])  # |1><1|
+    @staticmethod
+    def P1():
+        M = Matrix([[0, 0], [0, 1]])  # |1><1|
         return M

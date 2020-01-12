@@ -9,22 +9,46 @@ from sympy import *
 from sympy.physics.quantum import TensorProduct
 from sympy.physics.quantum import tensor_product_simp
 from sympy.physics.quantum import Dagger
+from IPython.display import display, Math, Latex
 from cmath import *
 import matplotlib.pyplot as plt
 
+from logicqubit.gates import *
+
 class LogicQuBit:
 
-    def __init__(self, num = 3):
+    def __init__(self, num = 3, symbolic=False):
         self.num = num
+        self.symbolic = symbolic
         self.measured_qubits = []
         self.measured_values = []
-        self.phi = self.product([self.ket(0) for i in range(num)]) # o qubit 1 é o mais a esquerda
+        self.operations = []
+        if(not self.symbolic):
+            self.phi = self.product([self.ket(0) for i in range(num)]) # o qubit 1 é o mais a esquerda
+        else:
+            a = symbols([str(i) + "a" + str(i) + "_0" for i in range(1, self.num + 1)])
+            b = symbols([str(i) + "b" + str(i) + "_1" for i in range(1, self.num + 1)])
+            self.phi = self.product([a[i]*self.ket(0)+b[i]*self.ket(1) for i in range(num)])
+
+    def addOp(self, operation, values):
+        op = str(operation)+"("+str(values[0])
+        for value in values[1:]:
+            op+=","+str(value)
+        op += ")"
+        self.operations.append(op)
 
     def onehot(self, i, value):
         if(i == value):
             return 1
         else:
             return 0
+
+    def texfix(self, value):
+        tex = latex(value).replace(' \cdot ', '')
+        for i in range(1, self.num+1):
+            tex = tex.replace(str(i) + 'a', 'a')
+            tex = tex.replace(str(i) + 'b', 'b')
+        return tex
 
     def ket(self, value, d = 2):
         return Matrix([[self.onehot(i, value)] for i in range(d)])
@@ -45,14 +69,12 @@ class LogicQuBit:
         return list
 
     def getOrdListCtrlGate(self, control, target, Gate):
-        P0 = Matrix([[1, 0], [0, 0]]) # |0><0|
-        P1 = Matrix([[0, 0], [0, 1]]) # |1><1|
         list1 = []
         list2 = []
         for i in range(1,self.num+1):
             if i == control:
-                list1.append(P0)
-                list2.append(P1)
+                list1.append(Gates.P0())
+                list2.append(Gates.P1())
             elif i == target:
                 list1.append(eye(2))
                 list2.append(Gate)
@@ -62,14 +84,12 @@ class LogicQuBit:
         return list1, list2
 
     def getOrdListCtrl2Gate(self, control1, control2, target, Gate):
-        P0 = Matrix([[1, 0], [0, 0]]) # |0><0|
-        P1 = Matrix([[0, 0], [0, 1]]) # |1><1|
         list1 = []
         list2 = []
         for i in range(1,self.num+1):
             if i == control1 or i == control2:
                 list1.append(eye(2))
-                list2.append(P1)
+                list2.append(Gates.P1())
             elif i == target:
                 list1.append(eye(2))
                 list2.append(Gate)
@@ -79,33 +99,33 @@ class LogicQuBit:
         return list1, list2
 
     def X(self, target):
-        X = Matrix([[0, 1], [1, 0]])
-        list = self.getOrdListSimpleGate(target, X)
+        self.addOp("X", [target])
+        list = self.getOrdListSimpleGate(target, Gates.X())
         self.phi = self.product(list)*self.phi
 
     def Y(self, target):
-        Y = Matrix([[0, -I], [I, 0]])
-        list = self.getOrdListSimpleGate(target, Y)
+        self.addOp("Y", [target])
+        list = self.getOrdListSimpleGate(target, Gates.Y())
         self.phi = self.product(list)*self.phi
 
     def Z(self, target):
-        Z = Matrix([[1, 0], [0, -1]])
-        list = self.getOrdListSimpleGate(target, Z)
+        self.addOp("Z", [target])
+        list = self.getOrdListSimpleGate(target, Gates.Z())
         self.phi = self.product(list)*self.phi
 
     def H(self, target):
-        M = 1 / sqrt(2) * Matrix([[1, 1], [1, -1]])
-        list = self.getOrdListSimpleGate(target, M)
+        self.addOp("H", [target])
+        list = self.getOrdListSimpleGate(target, Gates.H())
         self.phi = self.product(list)*self.phi
 
     def U1(self, target, _lambda):
-        _U1 = Matrix([[1, 0], [0, exp(I * _lambda)]])
-        list = self.getOrdListSimpleGate(target, _U1)
+        self.addOp("U1", [target, _lambda])
+        list = self.getOrdListSimpleGate(target, Gates.U1(_lambda))
         self.phi = self.product(list)*self.phi
 
     def CX(self, control, target):
-        X = Matrix([[0, 1], [1, 0]])
-        list1,list2 = self.getOrdListCtrlGate(control, target, X)
+        self.addOp("CX", [control, target])
+        list1,list2 = self.getOrdListCtrlGate(control, target, Gates.X())
         product = self.product(list1) + self.product(list2)
         self.phi = product*self.phi
         return self.phi
@@ -114,15 +134,15 @@ class LogicQuBit:
         return self.CX(control, target)
 
     def CU1(self, control, target, _lambda):
-        _U1 = Matrix([[1, 0], [0, exp(I*_lambda)]])
-        list1,list2 = self.getOrdListCtrlGate(control, target, _U1)
+        self.addOp("CU1", [control, target, _lambda])
+        list1,list2 = self.getOrdListCtrlGate(control, target, Gates.U1(_lambda))
         product = self.product(list1) + self.product(list2)
         self.phi = product*self.phi
         return self.phi
 
     def CCX(self, control1, control2, target):
-        X = Matrix([[0, 1], [1, 0]])
-        Gate = X-eye(2)
+        self.addOp("CCX", [control1, control2, target])
+        Gate = Gates.X()-eye(2)
         list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
         product = self.product(list1) + self.product(list2)
         self.phi = product*self.phi
@@ -135,13 +155,12 @@ class LogicQuBit:
         density_m = self.phi*self.phi.adjoint() # |phi><phi|
         return density_m
 
-    def Measure2(self, target):
-        P0 = Matrix([[1, 0], [0, 0]]) # |0><0|
-        P1 = Matrix([[0, 0], [0, 1]]) # |1><1|
+    def Measure_One(self, target):
+        self.addOp("Measure", [target])
         density_m = self.DensityMatrix()
-        list = self.getOrdListSimpleGate(target, P0)
+        list = self.getOrdListSimpleGate(target, Gates.P0())
         P0 = self.product(list)
-        list = self.getOrdListSimpleGate(target, P1)
+        list = self.getOrdListSimpleGate(target, Gates.P1())
         P1 = self.product(list)
         measure_0 = (density_m*P0).trace()
         measure_1 = (density_m*P1).trace()
@@ -150,8 +169,7 @@ class LogicQuBit:
         return [measure_0, measure_1]
 
     def Measure(self, target):
-        P0 = Matrix([[1, 0], [0, 0]])  # |0><0|
-        P1 = Matrix([[0, 0], [0, 1]])  # |1><1|
+        self.addOp("Measure", target)
         target.sort()
         self.measured_qubits = target
         density_m = self.DensityMatrix()
@@ -165,9 +183,9 @@ class LogicQuBit:
             for j in range(self.num):
                 if j + 1 == target[cnt]:
                     if blist[cnt] == 0:
-                        tlist[j] = P0
+                        tlist[j] = Gates.P0()
                     else:
-                        tlist[j] = P1
+                        tlist[j] = Gates.P1()
                     cnt += 1
                     if (cnt >= size_p):
                         break
@@ -191,6 +209,16 @@ class LogicQuBit:
         pure = (density_m*density_m).trace()
         return pure
 
-    def _print(self):
-        #"{0:b}".format(5).zfill(3)
-        print(self.phi)
+    def Print(self):
+        if(not self.symbolic):
+            tex = latex(self.phi)
+        else:
+            tex = self.texfix(self.phi)
+        print(tex)
+
+    def PrintTex(self):
+        if(not self.symbolic):
+            tex = latex(self.phi)
+        else:
+            tex = self.texfix(self.phi)
+        display(Math(tex))
