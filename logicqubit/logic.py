@@ -13,9 +13,11 @@ from IPython.display import display, Math, Latex
 from cmath import *
 import matplotlib.pyplot as plt
 
+from logicqubit.hilbert import *
 from logicqubit.gates import *
+from logicqubit.utils import *
 
-class LogicQuBit(Gates):
+class LogicQuBit(Hilbert, Gates):
 
     def __init__(self, num = 3, symbolic=False):
         self.num = num
@@ -37,21 +39,12 @@ class LogicQuBit(Gates):
         op += ")"
         self.operations.append(op)
 
-    def onehot(self, i, value):
-        if(i == value):
-            return 1
-        else:
-            return 0
-
     def texfix(self, value):
         tex = latex(value).replace(' \cdot ', '')
         for i in range(1, self.num+1):
             tex = tex.replace(str(i) + 'a', 'a')
             tex = tex.replace(str(i) + 'b', 'b')
         return tex
-
-    def ket(self, value, d = 2):
-        return Matrix([[self.onehot(i, value)] for i in range(d)])
 
     def product(self, list):
         A = list[0] # atua no qubit 1 que é o mais a esquerda
@@ -247,3 +240,6 @@ class LogicQuBit(Gates):
         else:
             tex = self.texfix(self.psi)
         display(Math(tex))
+
+    def PrintOp(self):
+        print(self.operations)

@@ -10,15 +10,12 @@ from sympy.physics.quantum import TensorProduct
 from sympy.physics.quantum import tensor_product_simp
 from sympy.physics.quantum import Dagger
 
-from .utils import *
+from logicqubit.utils import *
 
 class Hilbert():
 
-    def __init__(self):
-        self.d = 1
-
     def ket(self, value, d = 2):
-        return Matrix([[self.onehot(i, value)] for i in range(d)])
+        return Matrix([[Utils.onehot(i, value)] for i in range(d)])
 
     def bra(self, value, d = 2):
-        return Matrix([self.onehot(i, value) for i in range(d)])
+        return Matrix([Utils.onehot(i, value) for i in range(d)])

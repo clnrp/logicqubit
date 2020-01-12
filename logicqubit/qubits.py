@@ -10,7 +10,7 @@ from sympy.physics.quantum import TensorProduct
 from sympy.physics.quantum import tensor_product_simp
 from sympy.physics.quantum import Dagger
 
-class Qubit:
+class Qubits:
     def __init__(self, num = 3):
         self.num = num
 
