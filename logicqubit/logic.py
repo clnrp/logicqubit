@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 from logicqubit.gates import *
 
-class LogicQuBit:
+class LogicQuBit(Gates):
 
     def __init__(self, num = 3, symbolic=False):
         self.num = num
@@ -24,7 +24,7 @@ class LogicQuBit:
         self.measured_values = []
         self.operations = []
         if(not self.symbolic):
-            self.psi = self.product([self.ket(0) for i in range(num)]) # o qubit 1 é o mais a esquerda
+            self.psi = self.product([self.ket(0) for i in range(num)]) # o qubit 1 é o primeiro a esquerda
         else:
             a = symbols([str(i) + "a" + str(i) + "_0" for i in range(1, self.num + 1)])
             b = symbols([str(i) + "b" + str(i) + "_1" for i in range(1, self.num + 1)])
@@ -76,8 +76,8 @@ class LogicQuBit:
         list2 = []
         for i in range(1,self.num+1):
             if i == control:
-                list1.append(Gates.P0())
-                list2.append(Gates.P1())
+                list1.append(super().P0())
+                list2.append(super().P1())
             elif i == target:
                 list1.append(eye(2))
                 list2.append(Gate)
@@ -92,7 +92,7 @@ class LogicQuBit:
         for i in range(1,self.num+1):
             if i == control1 or i == control2:
                 list1.append(eye(2))
-                list2.append(Gates.P1())
+                list2.append(super().P1())
             elif i == target:
                 list1.append(eye(2))
                 list2.append(Gate)
@@ -103,81 +103,78 @@ class LogicQuBit:
 
     def X(self, target):
         self.addOp("X", [target])
-        list = self.getOrdListSimpleGate(target, Gates.X())
+        list = self.getOrdListSimpleGate(target, super().X())
         self.psi = self.product(list)*self.psi
 
     def Y(self, target):
         self.addOp("Y", [target])
-        list = self.getOrdListSimpleGate(target, Gates.Y())
+        list = self.getOrdListSimpleGate(target, super().Y())
         self.psi = self.product(list)*self.psi
 
     def Z(self, target):
         self.addOp("Z", [target])
-        list = self.getOrdListSimpleGate(target, Gates.Z())
+        list = self.getOrdListSimpleGate(target, super().Z())
         self.psi = self.product(list)*self.psi
 
     def H(self, target):
         self.addOp("H", [target])
-        list = self.getOrdListSimpleGate(target, Gates.H())
+        list = self.getOrdListSimpleGate(target, super().H())
         self.psi = self.product(list)*self.psi
 
     def U1(self, target, _lambda):
         self.addOp("U1", [target, _lambda])
-        list = self.getOrdListSimpleGate(target, Gates.U1(_lambda))
+        list = self.getOrdListSimpleGate(target, super().U1(_lambda))
         self.psi = self.product(list)*self.psi
 
     def U2(self, target, phi, _lambda):
         self.addOp("U2", [target, phi, _lambda])
-        list = self.getOrdListSimpleGate(target, Gates.U2(phi,_lambda))
+        list = self.getOrdListSimpleGate(target, super().U2(phi,_lambda))
         self.psi = self.product(list)*self.psi
 
     def U3(self, target, theta, phi, _lambda):
         self.addOp("U3", [target, theta, phi, _lambda])
-        list = self.getOrdListSimpleGate(target, Gates.U3(theta, phi, _lambda))
+        list = self.getOrdListSimpleGate(target, super().U3(theta, phi, _lambda))
         self.psi = self.product(list)*self.psi
 
     def RX(self, target, theta):
         self.addOp("RX", [target, theta])
-        list = self.getOrdListSimpleGate(target, Gates.RX(theta))
+        list = self.getOrdListSimpleGate(target, super().RX(theta))
         self.psi = self.product(list)*self.psi
 
     def RY(self, target, theta):
         self.addOp("RY", [target, theta])
-        list = self.getOrdListSimpleGate(target, Gates.RY(theta))
+        list = self.getOrdListSimpleGate(target, super().RY(theta))
         self.psi = self.product(list)*self.psi
 
     def RZ(self, target, phi):
         self.addOp("RZ", [target, phi])
-        list = self.getOrdListSimpleGate(target, Gates.RZ(phi))
+        list = self.getOrdListSimpleGate(target, super().RZ(phi))
         self.psi = self.product(list)*self.psi
 
     def CX(self, control, target):
         self.addOp("CX", [control, target])
-        list1,list2 = self.getOrdListCtrlGate(control, target, Gates.X())
+        list1,list2 = self.getOrdListCtrlGate(control, target, super().X())
         product = self.product(list1) + self.product(list2)
         self.psi = product*self.psi
-        return self.psi
 
     def CNOT(self, control, target):
-        return self.CX(control, target)
+        self.CX(control, target)
 
     def CU1(self, control, target, _lambda):
         self.addOp("CU1", [control, target, _lambda])
-        list1,list2 = self.getOrdListCtrlGate(control, target, Gates.U1(_lambda))
+        list1,list2 = self.getOrdListCtrlGate(control, target, super().U1(_lambda))
         product = self.product(list1) + self.product(list2)
         self.psi = product*self.psi
-        return self.psi
 
     def CCX(self, control1, control2, target):
         self.addOp("CCX", [control1, control2, target])
-        Gate = Gates.X()-eye(2)
+        Gate = super().X()-eye(2)
         list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
         product = self.product(list1) + self.product(list2)
         self.psi = product*self.psi
-        return self.psi
 
     def Toffoli(self, control1, control2, target):
-        return self.CCX(control1, control2, target)
+        self.CCX(control1, control2, target)
 
     def DensityMatrix(self):
         density_m = self.psi*self.psi.adjoint() # |phi><phi|
@@ -186,9 +183,9 @@ class LogicQuBit:
     def Measure_One(self, target):
         self.addOp("Measure", [target])
         density_m = self.DensityMatrix()
-        list = self.getOrdListSimpleGate(target, Gates.P0())
+        list = self.getOrdListSimpleGate(target, super().P0())
         P0 = self.product(list)
-        list = self.getOrdListSimpleGate(target, Gates.P1())
+        list = self.getOrdListSimpleGate(target, super().P1())
         P1 = self.product(list)
         measure_0 = (density_m*P0).trace()
         measure_1 = (density_m*P1).trace()
@@ -211,9 +208,9 @@ class LogicQuBit:
             for j in range(self.num):
                 if j + 1 == target[cnt]:
                     if blist[cnt] == 0:
-                        tlist[j] = Gates.P0()
+                        tlist[j] = super().P0()
                     else:
-                        tlist[j] = Gates.P1()
+                        tlist[j] = super().P1()
                     cnt += 1
                     if (cnt >= size_p):
                         break
