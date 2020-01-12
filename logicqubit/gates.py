@@ -29,6 +29,16 @@ class Gates:
         return M
 
     @staticmethod
+    def S(): # sqrt(Z)
+        M = Matrix([[1, 0], [0, I]])
+        return M
+
+    @staticmethod
+    def T(): # sqrt(S)
+        M = Matrix([[1, 0], [0, (1+I)/sqrt(2)]])
+        return M
+
+    @staticmethod
     def H():
         M = 1 / sqrt(2) * Matrix([[1, 1], [1, -1]])
         return M
