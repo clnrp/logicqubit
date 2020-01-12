@@ -2,5 +2,5 @@
 build
 data
 dist
-logicbit.egg-info
+logicqubit.egg-info
 *.pyc
