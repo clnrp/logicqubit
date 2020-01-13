@@ -5,13 +5,15 @@ from logicqubit.logic import *
 
 logicQuBit  = LogicQuBit(3)
 
-a = Qubit(1)
-b = Qubit(3)
+a = Qubit()
+b = Qubit()
 
 logicQuBit.H(a)
 logicQuBit.CNOT(a,b)
 
-print(a)
+print(a.getName())
+print(b.getName())
+
 print(logicQuBit.DensityMatrix())
 print(logicQuBit.Pure())
 

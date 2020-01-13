@@ -32,6 +32,10 @@ class Qubits(Hilbert):
             Qubits.number += 1
 
     @staticmethod
+    def getQubitNumber():
+        return Qubits.number
+
+    @staticmethod
     def getPsi():
         return Qubits.psi
 
@@ -40,12 +44,9 @@ class Qubits(Hilbert):
         Qubits.psi = psi
 
 class Qubit(Qubits):
-    def __init__(self, id = None, name = None):
-        Qubit.addQubit()
-        if(id == None):
-            self.id = Qubits.number
-        else:
-            self.id = id
+    def __init__(self, name = None):
+        self.addQubit()
+        self.id = self.getQubitNumber()
         if(name == None):
             self.name = "q"+str(self.id)
         else:
@@ -56,6 +57,12 @@ class Qubit(Qubits):
 
     def __str__(self):
         return str(Qubits.psi)
+
+    def getName(self):
+        return self.name
+
+    def getId(self):
+        return self.id
 
 class QubitRegister(Qubit):
     def __init__(self, number = 3):
