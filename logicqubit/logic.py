@@ -13,24 +13,19 @@ from IPython.display import display, Math, Latex
 from cmath import *
 import matplotlib.pyplot as plt
 
-from logicqubit.hilbert import *
+from logicqubit.qubits import *
 from logicqubit.gates import *
 from logicqubit.utils import *
 
-class LogicQuBit(Hilbert, Gates):
+class LogicQuBit(Qubits, Gates):
 
     def __init__(self, num = 3, symbolic=False):
+        super().__init__(num, symbolic)
         self.num = num
         self.symbolic = symbolic
         self.measured_qubits = []
         self.measured_values = []
         self.operations = []
-        if(not self.symbolic):
-            self.psi = self.product([self.ket(0) for i in range(num)]) # o qubit 1 é o primeiro a esquerda
-        else:
-            a = symbols([str(i) + "a" + str(i) + "_0" for i in range(1, self.num + 1)])
-            b = symbols([str(i) + "b" + str(i) + "_1" for i in range(1, self.num + 1)])
-            self.psi = self.product([a[i]*self.ket(0)+b[i]*self.ket(1) for i in range(num)])
 
     def addOp(self, operation, values):
         op = str(operation)+"("+str(values[0])
@@ -45,12 +40,6 @@ class LogicQuBit(Hilbert, Gates):
             tex = tex.replace(str(i) + 'a', 'a')
             tex = tex.replace(str(i) + 'b', 'b')
         return tex
-
-    def product(self, list):
-        A = list[0] # atua no qubit 1 que é o mais a esquerda
-        for M in list[1:]:
-            A = TensorProduct(A, M)
-        return A
 
     def getOp(self):
         return self.operations
@@ -97,58 +86,58 @@ class LogicQuBit(Hilbert, Gates):
     def X(self, target):
         self.addOp("X", [target])
         list = self.getOrdListSimpleGate(target, super().X())
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list)*Qubits.psi
 
     def Y(self, target):
         self.addOp("Y", [target])
         list = self.getOrdListSimpleGate(target, super().Y())
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list) * Qubits.psi
 
     def Z(self, target):
         self.addOp("Z", [target])
         list = self.getOrdListSimpleGate(target, super().Z())
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list) * Qubits.psi
 
     def H(self, target):
         self.addOp("H", [target])
         list = self.getOrdListSimpleGate(target, super().H())
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list)*Qubits.psi
 
     def U1(self, target, _lambda):
         self.addOp("U1", [target, _lambda])
         list = self.getOrdListSimpleGate(target, super().U1(_lambda))
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list) * Qubits.psi
 
     def U2(self, target, phi, _lambda):
         self.addOp("U2", [target, phi, _lambda])
         list = self.getOrdListSimpleGate(target, super().U2(phi,_lambda))
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list) * Qubits.psi
 
     def U3(self, target, theta, phi, _lambda):
         self.addOp("U3", [target, theta, phi, _lambda])
         list = self.getOrdListSimpleGate(target, super().U3(theta, phi, _lambda))
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list) * Qubits.psi
 
     def RX(self, target, theta):
         self.addOp("RX", [target, theta])
         list = self.getOrdListSimpleGate(target, super().RX(theta))
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list) * Qubits.psi
 
     def RY(self, target, theta):
         self.addOp("RY", [target, theta])
         list = self.getOrdListSimpleGate(target, super().RY(theta))
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list) * Qubits.psi
 
     def RZ(self, target, phi):
         self.addOp("RZ", [target, phi])
         list = self.getOrdListSimpleGate(target, super().RZ(phi))
-        self.psi = self.product(list)*self.psi
+        Qubits.psi = self.product(list) * Qubits.psi
 
     def CX(self, control, target):
         self.addOp("CX", [control, target])
         list1,list2 = self.getOrdListCtrlGate(control, target, super().X())
         product = self.product(list1) + self.product(list2)
-        self.psi = product*self.psi
+        Qubits.psi = product * Qubits.psi
 
     def CNOT(self, control, target):
         self.CX(control, target)
@@ -157,20 +146,20 @@ class LogicQuBit(Hilbert, Gates):
         self.addOp("CU1", [control, target, _lambda])
         list1,list2 = self.getOrdListCtrlGate(control, target, super().U1(_lambda))
         product = self.product(list1) + self.product(list2)
-        self.psi = product*self.psi
+        Qubits.psi = product * Qubits.psi
 
     def CCX(self, control1, control2, target):
         self.addOp("CCX", [control1, control2, target])
         Gate = super().X()-eye(2)
         list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
         product = self.product(list1) + self.product(list2)
-        self.psi = product*self.psi
+        Qubits.psi = product * Qubits.psi
 
     def Toffoli(self, control1, control2, target):
         self.CCX(control1, control2, target)
 
     def DensityMatrix(self):
-        density_m = self.psi*self.psi.adjoint() # |phi><phi|
+        density_m = Qubits.psi * Qubits.psi.adjoint()
         return density_m
 
     def Measure_One(self, target):
@@ -188,7 +177,7 @@ class LogicQuBit(Hilbert, Gates):
 
     def Measure(self, target):
         self.addOp("Measure", target)
-        target.sort()
+        #target.sort()
         self.measured_qubits = target
         density_m = self.DensityMatrix()
         size_p = len(target)  # número de bits a ser medidos
@@ -229,16 +218,16 @@ class LogicQuBit(Hilbert, Gates):
 
     def Print(self):
         if(not self.symbolic):
-            tex = latex(self.psi)
+            tex = latex(Qubits.psi)
         else:
-            tex = self.texfix(self.psi)
+            tex = self.texfix(Qubits.psi)
         print(tex)
 
     def PrintTex(self):
         if(not self.symbolic):
-            tex = latex(self.psi)
+            tex = latex(Qubits.psi)
         else:
-            tex = self.texfix(self.psi)
+            tex = self.texfix(Qubits.psi)
         display(Math(tex))
 
     def PrintOp(self):

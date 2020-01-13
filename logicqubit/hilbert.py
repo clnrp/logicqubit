@@ -19,3 +19,9 @@ class Hilbert():
 
     def bra(self, value, d = 2):
         return Matrix([Utils.onehot(i, value) for i in range(d)])
+
+    def product(self, list):
+        A = list[0] # atua no qubit 1 que é o mais a esquerda
+        for M in list[1:]:
+            A = TensorProduct(A, M)
+        return A

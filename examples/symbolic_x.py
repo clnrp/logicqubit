@@ -5,7 +5,7 @@ from logicqubit.logic import *
 
 logicQuBit  = LogicQuBit(3, True)
 
-#logicQuBit.PrintTex()
+logicQuBit.PrintTex()
 #logicQuBit.X(1)
 #logicQuBit.PrintTex()
 
