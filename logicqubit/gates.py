@@ -13,6 +13,9 @@ from cmath import *
 
 class Gates:
 
+    def __init__(self, qubits_number):
+        Gates.qubits_number = qubits_number
+
     def X(self):
         M = Matrix([[0, 1], [1, 0]])
         return M
@@ -91,3 +94,43 @@ class Gates:
     def P1(self):
         M = Matrix([[0, 0], [0, 1]])  # |1><1|
         return M
+
+
+    def getOrdListSimpleGate(self, target, Gate):
+        list = []
+        for i in range(1, Gates.qubits_number+1):
+            if i == target:
+                list.append(Gate)
+            else:
+                list.append(eye(2))
+        return list
+
+    def getOrdListCtrlGate(self, control, target, Gate):
+        list1 = []
+        list2 = []
+        for i in range(1, Gates.qubits_number+1):
+            if i == control:
+                list1.append(self.P0())
+                list2.append(self.P1())
+            elif i == target:
+                list1.append(eye(2))
+                list2.append(Gate)
+            else:
+                list1.append(eye(2))
+                list2.append(eye(2))
+        return list1, list2
+
+    def getOrdListCtrl2Gate(self, control1, control2, target, Gate):
+        list1 = []
+        list2 = []
+        for i in range(1, Gates.qubits_number+1):
+            if i == control1 or i == control2:
+                list1.append(eye(2))
+                list2.append(self.P1())
+            elif i == target:
+                list1.append(eye(2))
+                list2.append(Gate)
+            else:
+                list1.append(eye(2))
+                list2.append(eye(2))
+        return list1, list2

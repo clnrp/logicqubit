@@ -8,8 +8,11 @@ logicQuBit  = LogicQuBit(3)
 a = Qubit()
 b = Qubit()
 
-logicQuBit.H(a)
-logicQuBit.CNOT(a,b)
+a.H()
+b.CNOT(a)
+
+#logicQuBit.H(a)
+#logicQuBit.CNOT(a,b)
 
 print(a.getName())
 print(b.getName())

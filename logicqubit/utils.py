@@ -18,3 +18,11 @@ class Utils:
             return 1
         else:
             return 0
+
+    @staticmethod
+    def texfix(value, number):
+        tex = latex(value).replace(' \cdot ', '')
+        for i in range(1, number+1):
+            tex = tex.replace(str(i) + 'a', 'a')
+            tex = tex.replace(str(i) + 'b', 'b')
+        return tex

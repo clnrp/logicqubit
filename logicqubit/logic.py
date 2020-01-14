@@ -15,73 +15,19 @@ import matplotlib.pyplot as plt
 
 from logicqubit.qubits import *
 from logicqubit.gates import *
+from logicqubit.circuit import *
 from logicqubit.utils import *
 
-class LogicQuBit(Qubits, Gates):
+class LogicQuBit(Qubits, Gates, Circuit):
 
-    def __init__(self, num = 3, symbolic=False):
-        super().__init__(num, symbolic)
-        self.num = num
+    def __init__(self, qubits_number = 3, symbolic=False):
+        super().__init__(qubits_number, symbolic)
+        Gates.__init__(self, qubits_number)
+        Circuit.__init__(self)
+        self.qubits_number = qubits_number
         self.symbolic = symbolic
         self.measured_qubits = []
         self.measured_values = []
-        self.operations = []
-
-    def addOp(self, operation, values):
-        op = str(operation)+"("+str(values[0])
-        for value in values[1:]:
-            op+=","+str(value)
-        op += ")"
-        self.operations.append(op)
-
-    def texfix(self, value):
-        tex = latex(value).replace(' \cdot ', '')
-        for i in range(1, self.num+1):
-            tex = tex.replace(str(i) + 'a', 'a')
-            tex = tex.replace(str(i) + 'b', 'b')
-        return tex
-
-    def getOp(self):
-        return self.operations
-
-    def getOrdListSimpleGate(self, target, Gate):
-        list = []
-        for i in range(1,self.num+1):
-            if i == target:
-                list.append(Gate)
-            else:
-                list.append(eye(2))
-        return list
-
-    def getOrdListCtrlGate(self, control, target, Gate):
-        list1 = []
-        list2 = []
-        for i in range(1,self.num+1):
-            if i == control:
-                list1.append(super().P0())
-                list2.append(super().P1())
-            elif i == target:
-                list1.append(eye(2))
-                list2.append(Gate)
-            else:
-                list1.append(eye(2))
-                list2.append(eye(2))
-        return list1, list2
-
-    def getOrdListCtrl2Gate(self, control1, control2, target, Gate):
-        list1 = []
-        list2 = []
-        for i in range(1,self.num+1):
-            if i == control1 or i == control2:
-                list1.append(eye(2))
-                list2.append(super().P1())
-            elif i == target:
-                list1.append(eye(2))
-                list2.append(Gate)
-            else:
-                list1.append(eye(2))
-                list2.append(eye(2))
-        return list1, list2
 
     def X(self, target):
         self.addOp("X", [target])
@@ -184,10 +130,10 @@ class LogicQuBit(Qubits, Gates):
         size = 2 ** size_p
         result = []
         for i in range(size):
-            tlist = [eye(2) for tl in range(self.num)]
+            tlist = [eye(2) for tl in range(self.qubits_number)]
             blist = [i >> bl & 0x1 for bl in range(size_p)] # bits de cada i
             cnt = 0
-            for j in range(self.num):
+            for j in range(self.qubits_number):
                 if j + 1 == target[cnt]:
                     if blist[cnt] == 0:
                         tlist[j] = super().P0()
@@ -220,14 +166,14 @@ class LogicQuBit(Qubits, Gates):
         if(not self.symbolic):
             tex = latex(Qubits.psi)
         else:
-            tex = self.texfix(Qubits.psi)
+            tex = Utils.texfix(Qubits.psi, self.qubits_number)
         print(tex)
 
     def PrintTex(self):
         if(not self.symbolic):
             tex = latex(Qubits.psi)
         else:
-            tex = self.texfix(Qubits.psi)
+            tex = Utils.texfix(Qubits.psi, self.qubits_number)
         display(Math(tex))
 
     def PrintOp(self):
