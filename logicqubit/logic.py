@@ -9,7 +9,6 @@ from sympy import *
 from sympy.physics.quantum import TensorProduct
 from sympy.physics.quantum import tensor_product_simp
 from sympy.physics.quantum import Dagger
-from IPython.display import display, Math, Latex
 from cmath import *
 import matplotlib.pyplot as plt
 
@@ -32,58 +31,68 @@ class LogicQuBit(Qubits, Gates, Circuit):
     def X(self, target):
         self.addOp("X", [target])
         list = self.getOrdListSimpleGate(target, super().X())
-        Qubits.psi = self.product(list)*Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def Y(self, target):
         self.addOp("Y", [target])
         list = self.getOrdListSimpleGate(target, super().Y())
-        Qubits.psi = self.product(list) * Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def Z(self, target):
         self.addOp("Z", [target])
         list = self.getOrdListSimpleGate(target, super().Z())
-        Qubits.psi = self.product(list) * Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def H(self, target):
         self.addOp("H", [target])
         list = self.getOrdListSimpleGate(target, super().H())
-        Qubits.psi = self.product(list)*Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def U1(self, target, _lambda):
         self.addOp("U1", [target, _lambda])
         list = self.getOrdListSimpleGate(target, super().U1(_lambda))
-        Qubits.psi = self.product(list) * Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def U2(self, target, phi, _lambda):
         self.addOp("U2", [target, phi, _lambda])
         list = self.getOrdListSimpleGate(target, super().U2(phi,_lambda))
-        Qubits.psi = self.product(list) * Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def U3(self, target, theta, phi, _lambda):
         self.addOp("U3", [target, theta, phi, _lambda])
         list = self.getOrdListSimpleGate(target, super().U3(theta, phi, _lambda))
-        Qubits.psi = self.product(list) * Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def RX(self, target, theta):
         self.addOp("RX", [target, theta])
         list = self.getOrdListSimpleGate(target, super().RX(theta))
-        Qubits.psi = self.product(list) * Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def RY(self, target, theta):
         self.addOp("RY", [target, theta])
         list = self.getOrdListSimpleGate(target, super().RY(theta))
-        Qubits.psi = self.product(list) * Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def RZ(self, target, phi):
         self.addOp("RZ", [target, phi])
         list = self.getOrdListSimpleGate(target, super().RZ(phi))
-        Qubits.psi = self.product(list) * Qubits.psi
+        Gates.operator = self.product(list)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def CX(self, control, target):
         self.addOp("CX", [control, target])
         list1,list2 = self.getOrdListCtrlGate(control, target, super().X())
-        product = self.product(list1) + self.product(list2)
-        Qubits.psi = product * Qubits.psi
+        Gates.operator = self.product(list1) + self.product(list2)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def CNOT(self, control, target):
         self.CX(control, target)
@@ -91,15 +100,15 @@ class LogicQuBit(Qubits, Gates, Circuit):
     def CU1(self, control, target, _lambda):
         self.addOp("CU1", [control, target, _lambda])
         list1,list2 = self.getOrdListCtrlGate(control, target, super().U1(_lambda))
-        product = self.product(list1) + self.product(list2)
-        Qubits.psi = product * Qubits.psi
+        Gates.operator = self.product(list1) + self.product(list2)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def CCX(self, control1, control2, target):
         self.addOp("CCX", [control1, control2, target])
         Gate = super().X()-eye(2)
         list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
-        product = self.product(list1) + self.product(list2)
-        Qubits.psi = product * Qubits.psi
+        Gates.operator = self.product(list1) + self.product(list2)
+        Qubits.psi = Gates.operator * Qubits.psi
 
     def Toffoli(self, control1, control2, target):
         self.CCX(control1, control2, target)
@@ -161,20 +170,3 @@ class LogicQuBit(Qubits, Gates, Circuit):
         density_m = self.DensityMatrix()
         pure = (density_m*density_m).trace()
         return pure
-
-    def Print(self):
-        if(not self.symbolic):
-            tex = latex(Qubits.psi)
-        else:
-            tex = Utils.texfix(Qubits.psi, self.qubits_number)
-        print(tex)
-
-    def PrintTex(self):
-        if(not self.symbolic):
-            tex = latex(Qubits.psi)
-        else:
-            tex = Utils.texfix(Qubits.psi, self.qubits_number)
-        display(Math(tex))
-
-    def PrintOp(self):
-        print(self.operations)

@@ -9,6 +9,7 @@ a = Qubit()
 b = Qubit()
 
 a.H()
+a.PrintLastOperator()
 b.CNOT(a)
 
 #logicQuBit.H(a)

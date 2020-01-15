@@ -9,12 +9,14 @@ from sympy import *
 from sympy.physics.quantum import TensorProduct
 from sympy.physics.quantum import tensor_product_simp
 from sympy.physics.quantum import Dagger
+from IPython.display import display, Math, Latex
 from cmath import *
 
 class Gates:
 
     def __init__(self, qubits_number):
         Gates.qubits_number = qubits_number
+        Gates.operator = 0
 
     def X(self):
         M = Matrix([[0, 1], [1, 0]])
@@ -134,3 +136,10 @@ class Gates:
                 list1.append(eye(2))
                 list2.append(eye(2))
         return list1, list2
+
+    def PrintLastOperator(self, tex = True):
+        if(tex):
+            value = latex(Gates.operator)
+            display(Math(value))
+        else:
+            print(Gates.operator)
