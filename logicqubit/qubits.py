@@ -42,33 +42,71 @@ class Qubits(Hilbert):
     def setPsi(self,psi):
         Qubits.psi = psi
 
-    def PrintState(self):
+    def qubitsToList(self, values):
+        result = []
+        for value in values:
+            print(type(value))
+            if (isinstance(value, Qubit)):
+                result.append(value.getId())
+            else:
+                result.append(value)
+        return result
+
+    def setSymbolValuesForAll(self, a, b):
+        if(Qubits.symbolic):
+            for i in range(1, Qubits.full_number+1):
+                Qubits.psi = Qubits.psi.subs(str(i)+"a"+str(i)+"_0", a)
+                Qubits.psi = Qubits.psi.subs(str(i)+"a"+str(i)+"_1", a)
+                Qubits.psi = Qubits.psi.subs(str(i)+"b"+str(i)+"_0", b)
+                Qubits.psi = Qubits.psi.subs(str(i)+"b"+str(i)+"_1", b)
+        else:
+            print("This session is not symbolic!")
+
+    def setSymbolValuesForListId(self, id, a, b):
+        if(Qubits.symbolic):
+            list_id = self.qubitsToList(id)
+            for i in list_id:
+                Qubits.psi = Qubits.psi.subs(str(i)+"a"+str(i)+"_0", a)
+                Qubits.psi = Qubits.psi.subs(str(i)+"a"+str(i)+"_1", a)
+                Qubits.psi = Qubits.psi.subs(str(i)+"b"+str(i)+"_0", b)
+                Qubits.psi = Qubits.psi.subs(str(i)+"b"+str(i)+"_1", b)
+        else:
+            print("This session is not symbolic!")
+
+    def PrintState(self, simple = False):
         if(not self.symbolic):
             value = latex(Qubits.psi)
         else:
             value = Utils.texfix(Qubits.psi, self.qubits_number)
-        display(Math(value))
+
+        if(not simple):
+            display(Math(value))
+        else:
+            print(value)
 
 class Qubit(Qubits, Gates, Circuit):
-    def __init__(self, name = None):
-        self.addQubit()
-        self.id = self.getQubitNumber()
-        if(name == None):
-            self.name = "q"+str(self.id)
+    def __init__(self, id = None):
+        if(id == None):
+            self.addQubit()
+            self.id = self.getQubitNumber()
         else:
-            self.name = name
+            self.id = id
+        self.name = "q"+str(self.id)
 
     def __eq__(self, other):
         return self.id == other
 
-    def __str__(self):
-        return str(Qubits.psi)
+    def setName(self, name):
+        self.name = name
 
     def getName(self):
         return self.name
 
     def getId(self):
         return self.id
+
+    def setSymbolValues(self, a, b):
+        self.setSymbolValuesForListId([self.id], a, b)
 
     def X(self):
         self.addOp("X", [self.id])
@@ -95,43 +133,43 @@ class Qubit(Qubits, Gates, Circuit):
         Qubits.psi = Gates.operator * Qubits.psi
 
     def U1(self, _lambda):
-        self.addOp("U1", [self.id, _lambda])
+        self.addOp("U1", self.qubitsToList([self.id, _lambda]))
         list = self.getOrdListSimpleGate(self.id, super().U1(_lambda))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def U2(self, phi, _lambda):
-        self.addOp("U2", [self.id, phi, _lambda])
+        self.addOp("U2", self.qubitsToList([self.id, phi, _lambda]))
         list = self.getOrdListSimpleGate(self.id, super().U2(phi,_lambda))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def U3(self, theta, phi, _lambda):
-        self.addOp("U3", [self.id, theta, phi, _lambda])
+        self.addOp("U3", self.qubitsToList([self.id, theta, phi, _lambda]))
         list = self.getOrdListSimpleGate(self.id, super().U3(theta, phi, _lambda))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def RX(self, theta):
-        self.addOp("RX", [self.id, theta])
+        self.addOp("RX", self.qubitsToList([self.id, theta]))
         list = self.getOrdListSimpleGate(self.id, super().RX(theta))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def RY(self, theta):
-        self.addOp("RY", [self.id, theta])
+        self.addOp("RY", self.qubitsToList([self.id, theta]))
         list = self.getOrdListSimpleGate(self.id, super().RY(theta))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def RZ(self, phi):
-        self.addOp("RZ", [self.id, phi])
+        self.addOp("RZ", self.qubitsToList([self.id, phi]))
         list = self.getOrdListSimpleGate(self.id, super().RZ(phi))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def CX(self, control):
-        self.addOp("CX", [control, self.id])
+        self.addOp("CX", self.qubitsToList([control, self.id]))
         list1,list2 = self.getOrdListCtrlGate(control, self.id, super().X())
         Gates.operator = self.product(list1) + self.product(list2)
         Qubits.psi = Gates.operator * Qubits.psi
@@ -140,13 +178,13 @@ class Qubit(Qubits, Gates, Circuit):
         self.CX(control)
 
     def CU1(self, control, _lambda):
-        self.addOp("CU1", [control, self.id, _lambda])
+        self.addOp("CU1", self.qubitsToList([control, self.id, _lambda]))
         list1,list2 = self.getOrdListCtrlGate(control, self.id, super().U1(_lambda))
         Gates.operator = self.product(list1) + self.product(list2)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def CCX(self, control1, control2):
-        self.addOp("CCX", [control1, control2, self.id])
+        self.addOp("CCX", self.qubitsToList([control1, control2, self.id]))
         Gate = super().X()-eye(2)
         list1,list2 = self.getOrdListCtrl2Gate(control1, control2, self.id, Gate)
         Gates.operator = self.product(list1) + self.product(list2)

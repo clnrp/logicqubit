@@ -22,4 +22,5 @@ print(logicQuBit.DensityMatrix())
 print(logicQuBit.Pure())
 
 logicQuBit.Measure([a,b])
+logicQuBit.PrintOperations()
 logicQuBit.Plot()

@@ -29,67 +29,67 @@ class LogicQuBit(Qubits, Gates, Circuit):
         self.measured_values = []
 
     def X(self, target):
-        self.addOp("X", [target])
+        self.addOp("X", self.qubitsToList([target]))
         list = self.getOrdListSimpleGate(target, super().X())
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def Y(self, target):
-        self.addOp("Y", [target])
+        self.addOp("Y", self.qubitsToList([target]))
         list = self.getOrdListSimpleGate(target, super().Y())
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def Z(self, target):
-        self.addOp("Z", [target])
+        self.addOp("Z", self.qubitsToList([target]))
         list = self.getOrdListSimpleGate(target, super().Z())
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def H(self, target):
-        self.addOp("H", [target])
+        self.addOp("H", self.qubitsToList([target]))
         list = self.getOrdListSimpleGate(target, super().H())
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def U1(self, target, _lambda):
-        self.addOp("U1", [target, _lambda])
+        self.addOp("U1", self.qubitsToList([target, _lambda]))
         list = self.getOrdListSimpleGate(target, super().U1(_lambda))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def U2(self, target, phi, _lambda):
-        self.addOp("U2", [target, phi, _lambda])
+        self.addOp("U2", self.qubitsToList([target, phi, _lambda]))
         list = self.getOrdListSimpleGate(target, super().U2(phi,_lambda))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def U3(self, target, theta, phi, _lambda):
-        self.addOp("U3", [target, theta, phi, _lambda])
+        self.addOp("U3", self.qubitsToList([target, theta, phi, _lambda]))
         list = self.getOrdListSimpleGate(target, super().U3(theta, phi, _lambda))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def RX(self, target, theta):
-        self.addOp("RX", [target, theta])
+        self.addOp("RX", self.qubitsToList([target, theta]))
         list = self.getOrdListSimpleGate(target, super().RX(theta))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def RY(self, target, theta):
-        self.addOp("RY", [target, theta])
+        self.addOp("RY", self.qubitsToList([target, theta]))
         list = self.getOrdListSimpleGate(target, super().RY(theta))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def RZ(self, target, phi):
-        self.addOp("RZ", [target, phi])
+        self.addOp("RZ", self.qubitsToList([target, phi]))
         list = self.getOrdListSimpleGate(target, super().RZ(phi))
         Gates.operator = self.product(list)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def CX(self, control, target):
-        self.addOp("CX", [control, target])
+        self.addOp("CX", self.qubitsToList([control, target]))
         list1,list2 = self.getOrdListCtrlGate(control, target, super().X())
         Gates.operator = self.product(list1) + self.product(list2)
         Qubits.psi = Gates.operator * Qubits.psi
@@ -98,13 +98,13 @@ class LogicQuBit(Qubits, Gates, Circuit):
         self.CX(control, target)
 
     def CU1(self, control, target, _lambda):
-        self.addOp("CU1", [control, target, _lambda])
+        self.addOp("CU1", self.qubitsToList([control, target, _lambda]))
         list1,list2 = self.getOrdListCtrlGate(control, target, super().U1(_lambda))
         Gates.operator = self.product(list1) + self.product(list2)
         Qubits.psi = Gates.operator * Qubits.psi
 
     def CCX(self, control1, control2, target):
-        self.addOp("CCX", [control1, control2, target])
+        self.addOp("CCX", self.qubitsToList([control1, control2, target]))
         Gate = super().X()-eye(2)
         list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
         Gates.operator = self.product(list1) + self.product(list2)
@@ -118,7 +118,7 @@ class LogicQuBit(Qubits, Gates, Circuit):
         return density_m
 
     def Measure_One(self, target):
-        self.addOp("Measure", [target])
+        self.addOp("Measure", self.qubitsToList([target])[0])
         density_m = self.DensityMatrix()
         list = self.getOrdListSimpleGate(target, super().P0())
         P0 = self.product(list)
@@ -131,7 +131,7 @@ class LogicQuBit(Qubits, Gates, Circuit):
         return [measure_0, measure_1]
 
     def Measure(self, target):
-        self.addOp("Measure", target)
+        self.addOp("Measure", self.qubitsToList(target))
         #target.sort()
         self.measured_qubits = target
         density_m = self.DensityMatrix()
