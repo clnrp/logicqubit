@@ -8,17 +8,17 @@
 class Circuit():
 
     def __init__(self):
-        Circuit.operations = []
+        Circuit.__operations = []
 
     def addOp(self, operation, values):
         op = str(operation)+"("+str(values[0])
         for value in values[1:]:
             op+=","+str(value)
         op += ")"
-        Circuit.operations.append(op)
+        Circuit.__operations.append(op)
 
     def getOp(self):
-        return Circuit.operations
+        return Circuit.__operations
 
     def PrintOperations(self):
-        print(self.operations)
+        print(self.__operations)
