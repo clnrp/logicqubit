@@ -64,10 +64,10 @@ class Qubits(Hilbert):
     def setSymbolValuesForAll(self, a, b):
         if(Qubits.__symbolic):
             for i in range(1, Qubits.__q_number+1):
-                Qubits.psi = Qubits.psi.subs(str(i)+"a"+str(i)+"_0", a)
-                Qubits.psi = Qubits.psi.subs(str(i)+"a"+str(i)+"_1", a)
-                Qubits.psi = Qubits.psi.subs(str(i)+"b"+str(i)+"_0", b)
-                Qubits.psi = Qubits.psi.subs(str(i)+"b"+str(i)+"_1", b)
+                Qubits.__psi = Qubits.__psi.subs(str(i)+"a"+str(i)+"_0", a)
+                Qubits.__psi = Qubits.__psi.subs(str(i)+"a"+str(i)+"_1", a)
+                Qubits.__psi = Qubits.__psi.subs(str(i)+"b"+str(i)+"_0", b)
+                Qubits.__psi = Qubits.__psi.subs(str(i)+"b"+str(i)+"_1", b)
         else:
             print("This session is not symbolic!")
 
@@ -75,10 +75,10 @@ class Qubits(Hilbert):
         if(Qubits.__symbolic):
             list_id = self.qubitsToList(id)
             for i in list_id:
-                Qubits.psi = Qubits.psi.subs(str(i)+"a"+str(i)+"_0", a)
-                Qubits.psi = Qubits.psi.subs(str(i)+"a"+str(i)+"_1", a)
-                Qubits.psi = Qubits.psi.subs(str(i)+"b"+str(i)+"_0", b)
-                Qubits.psi = Qubits.psi.subs(str(i)+"b"+str(i)+"_1", b)
+                Qubits.__psi = Qubits.__psi.subs(str(i)+"a"+str(i)+"_0", a)
+                Qubits.__psi = Qubits.__psi.subs(str(i)+"a"+str(i)+"_1", a)
+                Qubits.__psi = Qubits.__psi.subs(str(i)+"b"+str(i)+"_0", b)
+                Qubits.__psi = Qubits.__psi.subs(str(i)+"b"+str(i)+"_1", b)
         else:
             print("This session is not symbolic!")
 
