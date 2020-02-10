@@ -4,3 +4,4 @@ data/
 dist/
 logicqubit.egg-info/
 *.pyc
+venv/

@@ -7,8 +7,6 @@
 
 from sympy import *
 from sympy.physics.quantum import TensorProduct
-from sympy.physics.quantum import tensor_product_simp
-from sympy.physics.quantum import Dagger
 from cmath import *
 import matplotlib.pyplot as plt
 
@@ -19,7 +17,9 @@ from logicqubit.utils import *
 
 class LogicQuBit(Qubits, Gates, Circuit):
 
-    def __init__(self, qubits_number = 3, symbolic=False):
+    def __init__(self, qubits_number = 3, **kwargs):
+        symbolic = kwargs.get('symbolic', False)
+        cuda = kwargs.get('cuda', False)
         super().__init__(qubits_number, symbolic)
         Gates.__init__(self, qubits_number)
         Circuit.__init__(self)
@@ -30,85 +30,80 @@ class LogicQuBit(Qubits, Gates, Circuit):
 
     def X(self, target):
         self.addOp("X", self.qubitsToList([target]))
-        list = self.getOrdListSimpleGate(target, super().X())
-        operator = self.product(list)
+        operator = super().X(target)
         self.setOperation(operator)
 
     def Y(self, target):
         self.addOp("Y", self.qubitsToList([target]))
-        list = self.getOrdListSimpleGate(target, super().Y())
-        operator = self.product(list)
-        self.setOperator()
+        operator = super().Y(target)
         self.setOperation(operator)
 
     def Z(self, target):
         self.addOp("Z", self.qubitsToList([target]))
-        list = self.getOrdListSimpleGate(target, super().Z())
-        operator = self.product(list)
+        operator = super().Z(target)
         self.setOperation(operator)
 
     def H(self, target):
         self.addOp("H", self.qubitsToList([target]))
-        list = self.getOrdListSimpleGate(target, super().H())
-        operator = self.product(list)
+        operator = super().H(target)
         self.setOperation(operator)
 
     def U1(self, target, _lambda):
         self.addOp("U1", self.qubitsToList([target, _lambda]))
-        list = self.getOrdListSimpleGate(target, super().U1(_lambda))
-        operator = self.product(list)
+        operator = super().U1(target, _lambda)
         self.setOperation(operator)
 
     def U2(self, target, phi, _lambda):
         self.addOp("U2", self.qubitsToList([target, phi, _lambda]))
-        list = self.getOrdListSimpleGate(target, super().U2(phi,_lambda))
-        operator = self.product(list)
+        operator = super().U2(target, phi, _lambda)
         self.setOperation(operator)
 
     def U3(self, target, theta, phi, _lambda):
         self.addOp("U3", self.qubitsToList([target, theta, phi, _lambda]))
-        list = self.getOrdListSimpleGate(target, super().U3(theta, phi, _lambda))
-        operator = self.product(list)
+        operator = super().U3(target, theta, phi, _lambda)
         self.setOperation(operator)
 
     def RX(self, target, theta):
         self.addOp("RX", self.qubitsToList([target, theta]))
-        list = self.getOrdListSimpleGate(target, super().RX(theta))
-        operator = self.product(list)
+        operator = super().RX(target, theta)
         self.setOperation(operator)
 
     def RY(self, target, theta):
         self.addOp("RY", self.qubitsToList([target, theta]))
-        list = self.getOrdListSimpleGate(target, super().RY(theta))
-        operator = self.product(list)
+        operator = super().RY(target, theta)
         self.setOperation(operator)
 
     def RZ(self, target, phi):
         self.addOp("RZ", self.qubitsToList([target, phi]))
-        list = self.getOrdListSimpleGate(target, super().RZ(phi))
-        operator = self.product(list)
+        operator = super().RZ(target, phi)
         self.setOperation(operator)
 
     def CX(self, control, target):
         self.addOp("CX", self.qubitsToList([control, target]))
-        list1,list2 = self.getOrdListCtrlGate(control, target, super().X())
-        operator = self.product(list1) + self.product(list2)
+        operator = super().CX(control, target)
         self.setOperation(operator)
 
     def CNOT(self, control, target):
         self.CX(control, target)
 
+    def CY(self, control, target):
+        self.addOp("CY", self.qubitsToList([control, target]))
+        operator = super().CY(control, target)
+        self.setOperation(operator)
+
+    def CZ(self, control, target):
+        self.addOp("CZ", self.qubitsToList([control, target]))
+        operator = super().CZ(control, target)
+        self.setOperation(operator)
+
     def CU1(self, control, target, _lambda):
         self.addOp("CU1", self.qubitsToList([control, target, _lambda]))
-        list1,list2 = self.getOrdListCtrlGate(control, target, super().U1(_lambda))
-        operator = self.product(list1) + self.product(list2)
+        operator = super().CU1(control, target, _lambda)
         self.setOperation(operator)
 
     def CCX(self, control1, control2, target):
         self.addOp("CCX", self.qubitsToList([control1, control2, target]))
-        Gate = super().X()-eye(2)
-        list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
-        operator = self.product(list1) + self.product(list2)
+        operator = super().CCX(control1, control2, target)
         self.setOperation(operator)
 
     def Toffoli(self, control1, control2, target):
