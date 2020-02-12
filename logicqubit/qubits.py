@@ -5,7 +5,7 @@
 # e-mail: cleonerp@gmail.com
 # Apache License
 
-from sympy import *
+import sympy as sp
 from sympy.physics.quantum import TensorProduct
 from IPython.display import display, Math, Latex
 
@@ -20,34 +20,90 @@ class Qubits(Hilbert):
         Qubits.__q_number = qubits_number
         Qubits.__symbolic = symbolic
         Qubits.__number = 0
+        Qubits.__used_qubits = []
+        Qubits.__measured_qubits = []
+        Qubits.__measured_values = []
         if(not Qubits.__symbolic):
-            Qubits.__psi = self.product([self.ket(0) for i in range(Qubits.__q_number)]) # o qubit 1 é o primeiro a esquerda
+            Qubits.__psi = self.kronProduct([self.ket(0) for i in range(Qubits.__q_number)]) # o qubit 1 é o primeiro a esquerda
         else:
-            a = symbols([str(i) + "a" + str(i) + "_0" for i in range(1, Qubits.__q_number + 1)])
-            b = symbols([str(i) + "b" + str(i) + "_1" for i in range(1, Qubits.__q_number + 1)])
-            Qubits.__psi = self.product([a[i]*self.ket(0)+b[i]*self.ket(1) for i in range(Qubits.__q_number)])
+            a = sp.symbols([str(i) + "a" + str(i) + "_0" for i in range(1, Qubits.__q_number + 1)])
+            b = sp.symbols([str(i) + "b" + str(i) + "_1" for i in range(1, Qubits.__q_number + 1)])
+            Qubits.__psi = self.kronProduct([a[i]*self.ket(0)+b[i]*self.ket(1) for i in range(Qubits.__q_number)])
 
-    def addQubit(self):
-        if(Qubits.__number+1 <= Qubits.__q_number):
-            Qubits.__number += 1
+    def addQubit(self, id=None):
+        if(len(Qubits.__used_qubits) < Qubits.__q_number):
+            if(id != None):
+                if(not id in Qubits.__used_qubits):
+                    Qubits.__used_qubits.append(id)
+                else:
+                    print("qubit already used!")
+            else:
+                if(len(Qubits.__used_qubits) == 0):
+                    id = 1
+                else:
+                    id = self.getLowestIdAvailable()
+                Qubits.__used_qubits.append(id)
+            return id
+        else:
+            print("all qubits have already been used!")
+            return None
 
-    def getAddQubitNumber(self):
-        return Qubits.__number
+    def getLowestIdAvailable(self):
+        all = list(range(1, Qubits.__q_number + 1))
+        for i in Qubits.__used_qubits:
+            all.remove(i)
+        return min(all)
 
     def getQubitsNumber(self):
         return Qubits.__q_number
 
+    def getUsedQubits(self):
+        return len(Qubits.__used_qubits)
+
+    def setMeasuredQubits(self, target):
+        if(isinstance(target, list)):
+            for id in target:
+                Qubits.__measured_qubits.append(id)
+        else:
+            Qubits.__measured_qubits.append(target)
+
+    def getMeasuredQubits(self):
+        return Qubits.__measured_qubits
+
+    def isMeasured(self, target):
+        if (isinstance(target, list)):
+            for id in target:
+                if(id in Qubits.__measured_qubits):
+                    return True
+        else:
+            if(target in Qubits.__measured_qubits):
+                return True
+        return False
+
+    def setMeasuredValues(self, value):
+        Qubits.__measured_values = value
+
+    def getMeasuredValues(self):
+        return Qubits.__measured_values
+
     def isSymbolic(self):
         return Qubits.__symbolic == True
+
+    def setPsi(self, psi):
+        Qubits.__psi = psi
 
     def getPsi(self):
         return Qubits.__psi
 
-    def setPsi(self,psi):
-        Qubits.__psi = psi
+    def getPsiAdjoint(self):
+        if(self.getCuda()):
+            result = Qubits.__psi.transpose().conj()
+        else:
+            result = Qubits.__psi.adjoint()
+        return result
 
     def setOperation(self, operator):
-        Qubits.__psi = operator * Qubits.__psi
+        Qubits.__psi = self.product(operator, Qubits.__psi)
         Qubits.__last_operator = operator
 
     def qubitsToList(self, values):
@@ -82,7 +138,7 @@ class Qubits(Hilbert):
 
     def PrintState(self, simple = False):
         if(not self.__symbolic):
-            value = latex(Qubits.__psi)
+            value = sp.latex(Qubits.__psi)
         else:
             value = Utils.texfix(Qubits.__psi, self.__q_number)
 
@@ -93,7 +149,7 @@ class Qubits(Hilbert):
 
     def PrintLastOperator(self, tex = True):
         if(tex):
-            value = latex(Qubits.__last_operator)
+            value = sp.latex(Qubits.__last_operator)
             display(Math(value))
         else:
             print(Qubits.__last_operator)
@@ -101,11 +157,7 @@ class Qubits(Hilbert):
 
 class Qubit(Qubits, Gates, Circuit):
     def __init__(self, id = None):
-        if(id == None):
-            self.addQubit()
-            self.__id = self.getAddQubitNumber()
-        else:
-            self.__id = id
+        self.__id = self.addQubit(id)
         self.__name = "q"+str(self.__id)
 
     def __eq__(self, other):
@@ -136,6 +188,21 @@ class Qubit(Qubits, Gates, Circuit):
     def Z(self):
         self.addOp("Z", [self.__id])
         operator = super().Z(self.__id)
+        self.setOperation(operator)
+
+    def V(self, target):
+        self.addOp("V", [self.__id])
+        operator = super().V(self.__id)
+        self.setOperation(operator)
+
+    def S(self, target):
+        self.addOp("S", [self.__id])
+        operator = super().S(self.__id)
+        self.setOperation(operator)
+
+    def T(self, target):
+        self.addOp("T", [self.__id])
+        operator = super().T(self.__id)
         self.setOperation(operator)
 
     def H(self):
@@ -206,8 +273,37 @@ class Qubit(Qubits, Gates, Circuit):
 
 class QubitRegister(Qubit):
     def __init__(self, number = 3):
-        self.number = number
-        self.reg = [Qubit() for i in range(1,number+1)]
+        self.__number = number
+        if(self.getUsedQubits() < self.getQubitsNumber()):
+            self.__reg = [Qubit() for i in range(1, number+1)]
 
     def __getitem__(self, key):
-        return self.reg[key]
+        return self.__reg[key-1]
+
+    def X(self):
+        for qubit in self.__reg:
+            qubit.X()
+
+    def Y(self):
+        for qubit in self.__reg:
+            qubit.Y()
+
+    def Z(self):
+        for qubit in self.__reg:
+            qubit.Z()
+
+    def V(self, target):
+        for qubit in self.__reg:
+            qubit.V()
+
+    def S(self, target):
+        for qubit in self.__reg:
+            qubit.S()
+
+    def T(self, target):
+        for qubit in self.__reg:
+            qubit.T()
+
+    def H(self):
+        for qubit in self.__reg:
+            qubit.H()

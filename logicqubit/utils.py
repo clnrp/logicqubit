@@ -5,10 +5,8 @@
 # e-mail: cleonerp@gmail.com
 # Apache License
 
-from sympy import *
+import sympy as sp
 from sympy.physics.quantum import TensorProduct
-from sympy.physics.quantum import tensor_product_simp
-from sympy.physics.quantum import Dagger
 
 class Utils:
 
@@ -21,7 +19,7 @@ class Utils:
 
     @staticmethod
     def texfix(value, number):
-        tex = latex(value).replace(' \cdot ', '')
+        tex = sp.latex(value).replace(' \cdot ', '')
         for i in range(1, number+1):
             tex = tex.replace(str(i) + 'a', 'a')
             tex = tex.replace(str(i) + 'b', 'b')

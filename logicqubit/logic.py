@@ -5,7 +5,7 @@
 # e-mail: cleonerp@gmail.com
 # Apache License
 
-from sympy import *
+import sympy as sp
 from sympy.physics.quantum import TensorProduct
 from cmath import *
 import matplotlib.pyplot as plt
@@ -18,15 +18,15 @@ from logicqubit.utils import *
 class LogicQuBit(Qubits, Gates, Circuit):
 
     def __init__(self, qubits_number = 3, **kwargs):
-        symbolic = kwargs.get('symbolic', False)
-        cuda = kwargs.get('cuda', False)
-        super().__init__(qubits_number, symbolic)
+        self.__cuda = kwargs.get('cuda', True)
+        self.__symbolic = kwargs.get('symbolic', False)
+        self.__qubits_number = qubits_number
+        if(self.__symbolic):
+            self.__cuda = False
+        super().setCuda(self.__cuda)
+        super().__init__(qubits_number, self.__symbolic)
         Gates.__init__(self, qubits_number)
         Circuit.__init__(self)
-        self.__qubits_number = qubits_number
-        self.__symbolic = symbolic
-        self.__measured_qubits = []
-        self.__measured_values = []
 
     def X(self, target):
         self.addOp("X", self.qubitsToList([target]))
@@ -41,6 +41,21 @@ class LogicQuBit(Qubits, Gates, Circuit):
     def Z(self, target):
         self.addOp("Z", self.qubitsToList([target]))
         operator = super().Z(target)
+        self.setOperation(operator)
+
+    def V(self, target):
+        self.addOp("V", self.qubitsToList([target]))
+        operator = super().V(target)
+        self.setOperation(operator)
+
+    def S(self, target):
+        self.addOp("S", self.qubitsToList([target]))
+        operator = super().S(target)
+        self.setOperation(operator)
+
+    def T(self, target):
+        self.addOp("T", self.qubitsToList([target]))
+        operator = super().T(target)
         self.setOperation(operator)
 
     def H(self, target):
@@ -110,32 +125,35 @@ class LogicQuBit(Qubits, Gates, Circuit):
         self.CCX(control1, control2, target)
 
     def DensityMatrix(self):
-        density_m = self.getPsi() * self.getPsi().adjoint()
+        density_m = self.getPsi() * self.getPsiAdjoint()
         return density_m
 
     def Measure_One(self, target):
-        self.addOp("Measure", self.qubitsToList([target])[0])
-        density_m = self.DensityMatrix()
-        list = self.getOrdListSimpleGate(target, super().P0())
-        P0 = self.product(list)
-        list = self.getOrdListSimpleGate(target, super().P1())
-        P1 = self.product(list)
-        measure_0 = (density_m*P0).trace()
-        measure_1 = (density_m*P1).trace()
-        self.__measured_qubits = target
-        self.__measured_values = [measure_0, measure_1]
-        return [measure_0, measure_1]
+        if(self.isNotMeasured(target)):
+            self.addOp("Measure", self.qubitsToList([target])[0])
+            density_m = self.DensityMatrix()
+            list = self.getOrdListSimpleGate(target, super().P0())
+            P0 = self.kronProduct(list)
+            list = self.getOrdListSimpleGate(target, super().P1())
+            P1 = self.kronProduct(list)
+            measure_0 = (density_m*P0).trace()
+            measure_1 = (density_m*P1).trace()
+            self.setMeasuredQubits(target)
+            self.setMeasuredValues([measure_0, measure_1])
+            return [measure_0, measure_1]
+        else:
+            print("qubit already measured!")
 
     def Measure(self, target):
         self.addOp("Measure", self.qubitsToList(target))
         #target.sort()
-        self.__measured_qubits = target
+        self.setMeasuredQubits(target)
         density_m = self.DensityMatrix()
         size_p = len(target)  # número de bits a ser medidos
         size = 2 ** size_p
         result = []
         for i in range(size):
-            tlist = [eye(2) for tl in range(self.__qubits_number)]
+            tlist = [self.ID() for tl in range(self.__qubits_number)]
             blist = [i >> bl & 0x1 for bl in range(size_p)] # bits de cada i
             cnt = 0
             for j in range(self.__qubits_number):
@@ -147,17 +165,19 @@ class LogicQuBit(Qubits, Gates, Circuit):
                     cnt += 1
                     if (cnt >= size_p):
                         break
-            M = self.product(tlist)
+            M = self.kronProduct(tlist)
             measure = (density_m * M).trace()
+            if(self.__cuda):
+                measure = measure.item().real
             result.append(measure)
-        self.__measured_values = result
+        self.setMeasuredValues(result)
         return result
 
     def Plot(self):
-        size_p = len(self.__measured_qubits)  # número de bits a ser medidos
+        size_p = len(self.getMeasuredQubits())  # número de bits medidos
         size = 2 ** size_p
         names = ["|" + "{0:b}".format(i).zfill(size_p) + ">" for i in range(size)]
-        values = self.__measured_values
+        values = self.getMeasuredValues()
         plt.bar(names, values)
         plt.suptitle('')
         plt.show()
