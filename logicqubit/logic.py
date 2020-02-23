@@ -18,12 +18,9 @@ from logicqubit.utils import *
 class LogicQuBit(Qubits, Gates, Circuit):
 
     def __init__(self, qubits_number = 3, **kwargs):
-        self.__cuda = kwargs.get('cuda', True)
         self.__symbolic = kwargs.get('symbolic', False)
         self.__qubits_number = qubits_number
-        if(self.__symbolic):
-            self.__cuda = False
-        super().setCuda(self.__cuda)
+        super().setSymbolic(self.__symbolic)
         super().__init__(qubits_number, self.__symbolic)
         Gates.__init__(self, qubits_number)
         Circuit.__init__(self)
@@ -167,8 +164,6 @@ class LogicQuBit(Qubits, Gates, Circuit):
                         break
             M = self.kronProduct(tlist)
             measure = (density_m * M).trace()
-            if(self.__cuda):
-                measure = measure.item().real
             result.append(measure)
         self.setMeasuredValues(result)
         return result

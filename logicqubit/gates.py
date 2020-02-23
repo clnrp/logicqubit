@@ -6,7 +6,7 @@
 # Apache License
 
 import sympy as sp
-import cupy as cp
+import numpy as np
 from cmath import *
 
 from logicqubit.hilbert import *
@@ -17,8 +17,8 @@ class Gates(Hilbert):
         Gates.__qubits_number = qubits_number
 
     def Matrix(self, input):
-        if(self.getCuda()):
-            M = cp.array(input)
+        if(self.isSymbolic()):
+            M = np.array(input)
         else:
             M = sp.Matrix(input)
         return M

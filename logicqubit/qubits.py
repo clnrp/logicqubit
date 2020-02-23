@@ -96,7 +96,7 @@ class Qubits(Hilbert):
         return Qubits.__psi
 
     def getPsiAdjoint(self):
-        if(self.getCuda()):
+        if(not self.isSymbolic()):
             result = Qubits.__psi.transpose().conj()
         else:
             result = Qubits.__psi.adjoint()
