@@ -15,7 +15,7 @@ class Utils:
         if(i == value):
             return 1
         else:
-            return 0
+            return 0 
 
     @staticmethod
     def texfix(value, number):

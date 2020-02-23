@@ -17,7 +17,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='logicqubit',
     version=logicqubit.__version__,
-    description='LogicQubit is a simple library for quantum computing simulation, with gpu acceleration.',
+    description='LogicQubit is a simple library for quantum computing simulation.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/clnrp/logicqubit',
@@ -42,6 +42,6 @@ setup(
     ],
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['sympy','cupy'],
+    install_requires=['sympy','numpy'],
 
 )
