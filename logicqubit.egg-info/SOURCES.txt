@@ -3,11 +3,15 @@ setup.py
 logicqubit/__init__.py
 logicqubit/__main__.py
 logicqubit/circuit.py
+logicqubit/exceptions.py
 logicqubit/gates.py
 logicqubit/hilbert.py
 logicqubit/logic.py
+logicqubit/oracle.py
 logicqubit/qubits.py
+logicqubit/synthesis.py
 logicqubit/utils.py
+logicqubit/zhegalkin.py
 logicqubit.egg-info/PKG-INFO
 logicqubit.egg-info/SOURCES.txt
 logicqubit.egg-info/dependency_links.txt

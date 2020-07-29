@@ -3,21 +3,22 @@
 
 from logicqubit.logic import *
 
-logicQuBit = LogicQuBit(3, symbolic=True)
+logicQuBit = LogicQuBit(2, symbolic=True, first_left=False)
+#logicQuBit = LogicQuBit(3)
 
 q1 = Qubit()
 q2 = Qubit()
-q3 = Qubit()
+#q3 = Qubit()
 
 logicQuBit.PrintState(True)
 
-q1.Y()
+q1.X()
 
 logicQuBit.PrintState(True)
 
 q1.setSymbolValues(1, 0)
 q2.setSymbolValues(1, 0)
-q3.setSymbolValues(1, 0)
+#q3.setSymbolValues(1, 0)
 
 logicQuBit.PrintState(True)
 

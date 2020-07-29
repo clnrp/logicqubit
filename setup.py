@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 from os import path
 from io import open
+import ctypes
 import logicqubit
 
 # sudo pip3 install twine
@@ -13,6 +14,27 @@ here = path.abspath(path.dirname(__file__))
 
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
+
+def isCudaAvailable():
+    try:
+        libnames = ['libcuda.so', 'libcuda.dylib', 'cuda.dll']
+        for libname in libnames:
+            try:
+                cuda = ctypes.CDLL(libname)
+            except OSError:
+                continue
+            else:
+                break
+        cuda.cuInit(0)
+        return True
+    except Exception as ex:
+        print(str(ex))
+    return False
+
+if isCudaAvailable():
+    REQUIRES = ['sympy','numpy','cupy']
+else:
+    REQUIRES = ['sympy','numpy']
 
 setup(
     name='logicqubit',
@@ -42,6 +64,6 @@ setup(
     ],
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['sympy','numpy'],
+    install_requires=REQUIRES,
 
 )

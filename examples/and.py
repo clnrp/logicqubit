@@ -3,7 +3,7 @@
 
 from logicqubit.logic import *
 
-logicQuBit  = LogicQuBit(3)
+logicQuBit = LogicQuBit(3)
 
 logicQuBit.H(1)
 logicQuBit.PrintLastOperator()

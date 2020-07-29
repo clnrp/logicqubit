@@ -3,7 +3,7 @@
 
 from logicqubit.logic import *
 
-logicQuBit  = LogicQuBit(3)
+logicQuBit = LogicQuBit(2, symbolic=False)
 
 a = Qubit()
 b = Qubit()
@@ -18,9 +18,13 @@ b.CNOT(a)
 print(a.getName())
 print(b.getName())
 
+logicQuBit.setSymbolValuesForAll(1,0)
+
 print(logicQuBit.DensityMatrix())
 print(logicQuBit.Pure())
 
-logicQuBit.Measure([a,b])
+logicQuBit.PlotDensityMatrix()
+
+logicQuBit.Measure([a, b])
 logicQuBit.PrintOperations()
 logicQuBit.Plot()
