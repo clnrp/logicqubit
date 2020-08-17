@@ -364,6 +364,16 @@ class Qubit(Qubits, Gates, Circuit):
     def Toffoli(self, control1, control2):
         self.CCX(control1, control2)
 
+    def SWAP(self, target):
+        self.addOp("SWAP", self.qubitsToList([self.__id, target]))
+        operator = super().SWAP(self.__id, target)
+        self.setOperation(operator)
+
+    def Fredkin(self, target1, target2):
+        self.addOp("Fredkin", self.qubitsToList([self.__id, target1, target2]))
+        operator = super().Fredkin(self.__id, target1, target2)
+        self.setOperation(operator)
+
     def Controlled(self, name, control, target, adjoint = False):
         self.addOp(name, self.qubitsToList([control, self.__id]))
         functions = {'X': super().CX, 'Y': super().CY, 'Z': super().CZ}

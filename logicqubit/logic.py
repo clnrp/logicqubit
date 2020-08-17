@@ -164,6 +164,16 @@ class LogicQuBit(Qubits, Gates, Circuit):
     def Toffoli(self, control1, control2, target):
         self.CCX(control1, control2, target)
 
+    def SWAP(self, target1, target2):
+        self.addOp("SWAP", self.qubitsToList([target1, target2]))
+        operator = super().SWAP(target1, target2)
+        self.setOperation(operator)
+
+    def Fredkin(self, control, target1, target2):
+        self.addOp("Fredkin", self.qubitsToList([control, target1, target2]))
+        operator = super().Fredkin(control, target1, target2)
+        self.setOperation(operator)
+
     def addOracle(self, oracle):
         targets, input_qubits, truth_table = oracle.get()
         poly = Zhegalkin_Poly()

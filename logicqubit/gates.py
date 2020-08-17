@@ -237,19 +237,21 @@ class Gates(Hilbert):
         operator = self.kronProduct(list1) + self.kronProduct(list2)
         return operator
 
-    def Fredkin(self, control, target1, target2):
-        # Gate = Matrix([[0, 1], [1, 0]])-self.ID()
-        # list1,list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
-        # operator = self.kronProduct(list1) + self.kronProduct(list2)
-        return None
-
-    def SWAP(self):
-        M = Matrix([[1, 0, 0, 0], [0, 0, 1, 0],
-                    [0, 1, 0, 0], [0, 0, 0, 1]], self.getCuda())
-        return M
-
     def Toffoli(self, control1, control2, target):
         return self.CCX(control1, control2, target)
+
+    def SWAP(self, target1, target2):
+        list1, list2, list3, list4 = self.getOrdListSWAP(target1, target2)
+        operator = self.kronProduct(list1) + self.kronProduct(list2) + self.kronProduct(list3) + self.kronProduct(list4)
+        return operator
+
+    def Fredkin(self, control, target1, target2):
+        list1, list2, list3, list4, list5, list6 = self.getOrdListFredkin(control, target1, target2)
+        ID = self.kronProduct(list1)
+        P1_SWAP = self.kronProduct(list2) + self.kronProduct(list3) + self.kronProduct(list4) + self.kronProduct(list5)
+        P1_ID = self.kronProduct(list6)
+        operator = ID + (P1_SWAP-P1_ID)
+        return operator
 
     def getOrdListSimpleGate(self, target, Gate):
         list = []
@@ -301,3 +303,73 @@ class Gates(Hilbert):
                 list1.append(self.ID())
                 list2.append(self.ID())
         return list1, list2
+
+    def getOrdListSWAP(self, target1, target2):
+        list1 = []
+        list2 = []
+        list3 = []
+        list4 = []
+        if (self.isFirstLeft()):
+            plist = range(1, self.__number_of_qubits + 1)
+        else:
+            plist = reversed(range(1, self.__number_of_qubits + 1))
+        for i in plist:
+            if i == target1:
+                list1.append(self.P0())
+                list2.append(self.L0())
+                list3.append(self.L1())
+                list4.append(self.P1())
+            elif i == target2:
+                list1.append(self.P0())
+                list2.append(self.L1())
+                list3.append(self.L0())
+                list4.append(self.P1())
+            else:
+                list1.append(self.ID())
+                list2.append(self.ID())
+                list3.append(self.ID())
+                list4.append(self.ID())
+        return list1, list2, list3, list4
+
+
+    def getOrdListFredkin(self, control, target1, target2):
+        list1 = []
+        list2 = []
+        list3 = []
+        list4 = []
+        list5 = []
+        list6 = []
+        if (self.isFirstLeft()):
+            plist = range(1, self.__number_of_qubits + 1)
+        else:
+            plist = reversed(range(1, self.__number_of_qubits + 1))
+        for i in plist:
+            if i == control:
+                list1.append(self.ID())  # ID
+                list2.append(self.P1())  # SWAP P0xP0
+                list3.append(self.P1())  # SWAP L0xL1
+                list4.append(self.P1())  # SWAP L1xL0
+                list5.append(self.P1())  # SWAP P1xP1
+                list6.append(self.P1())  # -ID
+            elif i == target1:
+                list1.append(self.ID())
+                list2.append(self.P0())
+                list3.append(self.L0())
+                list4.append(self.L1())
+                list5.append(self.P1())
+                list6.append(self.ID())
+            elif i == target2:
+                list1.append(self.ID())
+                list2.append(self.P0())
+                list3.append(self.L1())
+                list4.append(self.L0())
+                list5.append(self.P1())
+                list6.append(self.ID())
+            else:
+                list1.append(self.ID())
+                list2.append(self.ID())
+                list3.append(self.ID())
+                list4.append(self.ID())
+                list5.append(self.ID())
+                list6.append(self.ID())
+        return list1, list2, list3, list4, list5, list6
