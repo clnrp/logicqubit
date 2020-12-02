@@ -108,11 +108,9 @@ class Qubits(Hilbert):
         return dictPsi
 
     def getPsiAtAngles(self, degree=False):
-        angles = []
-        if self.getCuda():
-            angles = cp.angle(Qubits.__psi.get())
-            if(degree):
-                angles = angles*180/pi
+        angles = Qubits.__psi.getAngles()
+        if(degree):
+            angles = angles*180/pi
         return angles
 
     def getPsiAdjoint(self):

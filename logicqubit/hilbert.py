@@ -156,6 +156,17 @@ class Matrix:
     def get(self):
         return self.__matrix
 
+    def getAngles(self):
+        angles = []
+        if self.__cuda:
+            if cupy_is_available:
+                angles = cp.angle(self.__matrix)
+            else:
+                angles = np.angle(self.__matrix)
+        else:
+            print("This session is symbolic!")
+        return angles
+
     def trace(self):
         result = self.__matrix.trace()
         return Matrix(result, self.__cuda)
