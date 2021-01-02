@@ -231,19 +231,19 @@ class Qubit(Qubits, Gates, Circuit):
         operator = super().Z(self.__id)
         self.setOperation(operator)
 
-    def V(self, target):
+    def V(self, adjoint = False):
         self.addOp("V", [self.__id])
-        operator = super().V(self.__id)
+        operator = super().V(self.__id, adjoint)
         self.setOperation(operator)
 
-    def S(self, target, adjoint = False):
+    def S(self, adjoint = False):
         self.addOp("S", [self.__id])
         operator = super().S(self.__id, adjoint)
         self.setOperation(operator)
 
-    def T(self, target):
+    def T(self, adjoint = False):
         self.addOp("T", [self.__id])
-        operator = super().T(self.__id)
+        operator = super().T(self.__id, adjoint)
         self.setOperation(operator)
 
     def H(self):

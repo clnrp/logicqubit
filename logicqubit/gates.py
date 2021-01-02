@@ -52,22 +52,26 @@ class Gates(Hilbert):
         operator = self.kronProduct(list)
         return operator
 
-    def V(self, target=1):
+    def V(self, target=1, adjoint=False):
         M = Matrix([[1, -1j], [-1j, 1]], self.getCuda()) * ((1j + 1) / 2)  # sqrt(X) ou sqrt(NOT)
+        if adjoint:
+            M = M.adjoint()
         list = self.getOrdListSimpleGate(target, M)
         operator = self.kronProduct(list)
         return operator
 
     def S(self, target=1, adjoint=False):
         M = Matrix([[1, 0], [0, 1j]], self.getCuda())  # sqrt(Z)
-        if (adjoint):
+        if adjoint:
             M = M.adjoint()
         list = self.getOrdListSimpleGate(target, M)
         operator = self.kronProduct(list)
         return operator
 
-    def T(self, target=1):
+    def T(self, target=1, adjoint=False):
         M = Matrix([[1, 0], [0, (1 + 1j) / sqrt(2)]], self.getCuda())  # sqrt(S)
+        if adjoint:
+            M = M.adjoint()
         list = self.getOrdListSimpleGate(target, M)
         operator = self.kronProduct(list)
         return operator
@@ -79,7 +83,7 @@ class Gates(Hilbert):
         return operator
 
     def U(self, target, *argv):  # U or theta, phi and _lambda
-        if (len(argv) == 1):
+        if len(argv) == 1:
             M = Matrix(argv[0][0], self.getCuda())
         else:
             theta = argv[0]
@@ -155,7 +159,7 @@ class Gates(Hilbert):
 
     def CV(self, control, target, adjoint=False):
         M = Matrix([[1, -1j], [-1j, 1]], self.getCuda()) * ((1j + 1) / 2)  # sqrt(X) ou sqrt(NOT)
-        if (adjoint):
+        if adjoint:
             M = M.adjoint()
         list1, list2 = self.getOrdListCtrlGate(control, target, M)
         operator = self.kronProduct(list1) + self.kronProduct(list2)
@@ -163,7 +167,7 @@ class Gates(Hilbert):
 
     def CS(self, control, target, adjoint=False):
         M = Matrix([[1, 0], [0, 1j]], self.getCuda())  # sqrt(Z)
-        if (adjoint):
+        if adjoint:
             M = M.adjoint()
         list1, list2 = self.getOrdListCtrlGate(control, target, M)
         operator = self.kronProduct(list1) + self.kronProduct(list2)
@@ -171,7 +175,7 @@ class Gates(Hilbert):
 
     def CT(self, control, target, adjoint=False):
         M = Matrix([[1, 0], [0, (1 + 1j) / sqrt(2)]], self.getCuda())  # sqrt(S)
-        if (adjoint):
+        if adjoint:
             M = M.adjoint()
         list1, list2 = self.getOrdListCtrlGate(control, target, M)
         operator = self.kronProduct(list1) + self.kronProduct(list2)
@@ -198,7 +202,7 @@ class Gates(Hilbert):
         return operator
 
     def CU(self, control, target, *argv):  # U or theta, phi and _lambda
-        if (len(argv) == 1):
+        if len(argv) == 1:
             M = Matrix(argv[0][0], self.getCuda())
         else:
             theta = argv[0]
@@ -255,7 +259,7 @@ class Gates(Hilbert):
 
     def getOrdListSimpleGate(self, target, Gate):
         list = []
-        if (self.isFirstLeft()):
+        if self.isFirstLeft():
             plist = range(1, self.__number_of_qubits + 1)
         else:
             plist = reversed(range(1, self.__number_of_qubits + 1))
@@ -269,7 +273,7 @@ class Gates(Hilbert):
     def getOrdListCtrlGate(self, control, target, Gate):
         list1 = []
         list2 = []
-        if (self.isFirstLeft()):
+        if self.isFirstLeft():
             plist = range(1, self.__number_of_qubits + 1)
         else:
             plist = reversed(range(1, self.__number_of_qubits + 1))
@@ -288,7 +292,7 @@ class Gates(Hilbert):
     def getOrdListCtrl2Gate(self, control1, control2, target, Gate):
         list1 = []
         list2 = []
-        if (self.isFirstLeft()):
+        if self.isFirstLeft():
             plist = range(1, self.__number_of_qubits + 1)
         else:
             plist = reversed(range(1, self.__number_of_qubits + 1))
@@ -309,7 +313,7 @@ class Gates(Hilbert):
         list2 = []
         list3 = []
         list4 = []
-        if (self.isFirstLeft()):
+        if self.isFirstLeft():
             plist = range(1, self.__number_of_qubits + 1)
         else:
             plist = reversed(range(1, self.__number_of_qubits + 1))
@@ -339,7 +343,7 @@ class Gates(Hilbert):
         list4 = []
         list5 = []
         list6 = []
-        if (self.isFirstLeft()):
+        if self.isFirstLeft():
             plist = range(1, self.__number_of_qubits + 1)
         else:
             plist = reversed(range(1, self.__number_of_qubits + 1))

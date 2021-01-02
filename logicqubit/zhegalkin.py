@@ -6,7 +6,7 @@
 # Apache License
 
 from logicqubit.utils import *
-
+from sympy.physics.quantum import TensorProduct
 from IPython.display import display, Math, Latex
 
 # Zhegalkin polynomial
@@ -24,7 +24,7 @@ class Zhegalkin_Poly:
         self.simplified_elist = []
         self.simplified_plist = []
 
-    def kronProduct(self, list): # produto de Kronecker
+    def kronProduct(self, list):  # produto de Kronecker
         A = list[0]
         for M in list[1:]:
             A = TensorProduct(A, M)

@@ -31,10 +31,10 @@ def isCudaAvailable():
         print(str(ex))
     return False
 
-if isCudaAvailable():
-    REQUIRES = ['sympy','numpy','cupy']
-else:
-    REQUIRES = ['sympy','numpy']
+#if isCudaAvailable():
+#    REQUIRES = ['sympy','numpy','cupy']
+#else:
+REQUIRES = ['sympy','numpy']
 
 setup(
     name='logicqubit',
