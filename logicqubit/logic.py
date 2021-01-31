@@ -5,19 +5,11 @@
 # e-mail: cleonerp@gmail.com
 # Apache License
 
-import numpy as np
-from cmath import *
 import random
-
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-from logicqubit.hilbert import *
 from logicqubit.qubits import *
-from logicqubit.gates import *
-from logicqubit.circuit import *
-from logicqubit.zhegalkin import *
 from logicqubit.oracle import *
 from logicqubit.utils import *
 

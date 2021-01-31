@@ -214,6 +214,7 @@ class Gates(Hilbert):
         operator = self.kronProduct(list1) + self.kronProduct(list2)
         return operator
 
+    # generic controlled gate
     def CU(self, control, target, *argv):  # U or theta, phi and _lambda
         if len(argv) == 1:
             M = Matrix(argv[0][0], self.getCuda())
@@ -248,6 +249,7 @@ class Gates(Hilbert):
         operator = self.kronProduct(list1) + self.kronProduct(list2)
         return operator
 
+    # performs a state change of two qubits
     def SWAP(self, target1, target2):
         list1, list2, list3, list4 = self.getOrdListSWAP(target1, target2)
         operator = self.kronProduct(list1) + self.kronProduct(list2) + self.kronProduct(list3) + self.kronProduct(list4)
@@ -265,6 +267,7 @@ class Gates(Hilbert):
     def Toffoli(self, control1, control2, target):
         return self.CCX(control1, control2, target)
 
+    # it's a controlled SWAP
     def Fredkin(self, control, target1, target2):
         list1, list2, list3, list4, list5, list6 = self.getOrdListFredkin(control, target1, target2)
         ID = self.kronProduct(list1)

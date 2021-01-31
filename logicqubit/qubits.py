@@ -7,7 +7,6 @@
 
 from IPython.display import display, Math, Latex
 
-from logicqubit.hilbert import *
 from logicqubit.gates import *
 from logicqubit.circuit import *
 from logicqubit.utils import *

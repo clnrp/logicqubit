@@ -5,7 +5,6 @@
 # e-mail: cleonerp@gmail.com
 # Apache License
 
-import sympy as sp
 import numpy as np
 from sympy.physics.quantum import TensorProduct
 
