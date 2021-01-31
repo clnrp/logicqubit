@@ -10,15 +10,15 @@ class Circuit():
     def __init__(self):
         Circuit.__operations = []
 
-    def addOp(self, operation, values):
+    def addOp(self, operation, values):  # add the new type of operation
         op = str(operation)+"("+str(values[0])
         for value in values[1:]:
-            op+=","+str(value)
+            op += ","+str(value)
         op += ")"
         Circuit.__operations.append(op)
 
-    def getOp(self):
+    def getOp(self):  # get all operations
         return Circuit.__operations
 
-    def PrintOperations(self):
+    def PrintOperations(self):  # print all operations
         print(self.__operations)

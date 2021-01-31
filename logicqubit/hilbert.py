@@ -18,24 +18,26 @@ except Exception as ex:
 
 from logicqubit.utils import *
 
-
+"""
+Hilbert space
+"""
 class Hilbert():
     __number_of_qubits = 1
     __cuda = True
     __first_left = True
 
     @staticmethod
-    def ket(value):
+    def ket(value):  # get ket state
         result = Matrix([[Utils.onehot(i, value)] for i in range(2)], Hilbert.__cuda)
         return result
 
     @staticmethod
-    def bra(value):
+    def bra(value):  # get bra state
         result = Matrix([Utils.onehot(i, value) for i in range(2)], Hilbert.__cuda)
         return result
 
     @staticmethod
-    def getState():
+    def getState():  # get state of all qubits
         if Hilbert.getCuda():
             state = Hilbert.kronProduct([Hilbert.ket(0) for i in range(Hilbert.getNumberOfQubits())])
         else:
@@ -51,18 +53,18 @@ class Hilbert():
         return state
 
     @staticmethod
-    def getAdjoint(psi):
+    def getAdjoint(psi):  # get adjoint matrix
         result = psi.adjoint()
         return result
 
     @staticmethod
-    def product(Operator, psi):
+    def product(Operator, psi):  # performs an operation between the operator and the psi state
         result = Operator * psi
         return result
 
     @staticmethod
-    def kronProduct(list):  # produto de Kronecker
-        A = list[0]  # atua no qubit 1 que é o mais a esquerda
+    def kronProduct(list):  # Kronecker product
+        A = list[0]  # acts in qubit 1 which is the left most
         for M in list[1:]:
             A = A.kron(M)
         return A
@@ -92,41 +94,44 @@ class Hilbert():
         return Hilbert.__first_left
 
 
+"""
+Wrap methods from the numpy, cupy and sympy libraries.
+"""
 class Matrix:
 
     def __init__(self, matrix, cuda=True):
         self.__matrix = matrix
         self.__cuda = cuda
-        if isinstance(matrix, list):
+        if isinstance(matrix, list):  # if it's a list
             if self.__cuda:
                 if cupy_is_available:
-                    self.__matrix = cp.array(matrix)
+                    self.__matrix = cp.array(matrix)  # create matrix with cupy
                 else:
-                    self.__matrix = np.array(matrix)
+                    self.__matrix = np.array(matrix)  # create matrix with numpy
             else:
-                self.__matrix = sp.Matrix(matrix)
+                self.__matrix = sp.Matrix(matrix)  # create matrix with sympy
         else:
-            if isinstance(matrix, Matrix):
+            if isinstance(matrix, Matrix):  # if it's a Matrix class
                 self.__matrix = matrix.get()
             else:
                 self.__matrix = matrix
 
-    def __add__(self, other):
+    def __add__(self, other):  # sum of the matrices
         result = self.__matrix + other.get()
         return Matrix(result, self.__cuda)
 
-    def __sub__(self, other):
+    def __sub__(self, other):  # subtraction of the matrices
         result = self.__matrix - other.get()
         return Matrix(result, self.__cuda)
 
-    def __mul__(self, other):
+    def __mul__(self, other):  # product of the matrices
         if isinstance(other, Matrix):
             other = other.get()
             if self.__cuda:
                 if cupy_is_available:
-                    result = cp.dot(self.__matrix, other)
+                    result = cp.dot(self.__matrix, other)  # for cupy matrix
                 else:
-                    result = np.dot(self.__matrix, other)
+                    result = np.dot(self.__matrix, other)  # for numpy matrix
             else:
                 result = self.__matrix * other
         else:
@@ -156,7 +161,7 @@ class Matrix:
     def get(self):
         return self.__matrix
 
-    def getAngles(self):
+    def getAngles(self):  # converts state coefficients into angles
         angles = []
         if self.__cuda:
             if cupy_is_available:
@@ -167,11 +172,11 @@ class Matrix:
             print("This session is symbolic!")
         return angles
 
-    def trace(self):
+    def trace(self):  # get matrix trace
         result = self.__matrix.trace()
         return Matrix(result, self.__cuda)
 
-    def adjoint(self):
+    def adjoint(self):  # get matrix adjoint
         if self.__cuda:
             result = self.__matrix.transpose().conj()
         else:

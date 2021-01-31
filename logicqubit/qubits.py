@@ -22,7 +22,7 @@ class Qubits(Hilbert):
         if self.getCuda():
             Qubits.__psi = self.kronProduct([self.ket(0) for i in range(self.getNumberOfQubits())])
         else:
-            if self.isFirstLeft():  # o qubit 1 é o primeiro a esquerda
+            if self.isFirstLeft():  # qubit 1 is the first on the left
                 a = sp.symbols([str(i) + "a" + str(i) + "_0" for i in range(1, self.getNumberOfQubits() + 1)])
                 b = sp.symbols([str(i) + "b" + str(i) + "_1" for i in range(1, self.getNumberOfQubits() + 1)])
             else:
@@ -130,7 +130,7 @@ class Qubits(Hilbert):
                 result.append(value)
         return result
 
-    def setSymbolValuesForAll(self, a, b):
+    def setSymbolValuesForAll(self, a, b):  # replace all symbols with real values
         if not self.getCuda():
             for i in range(1, self.getNumberOfQubits()+1):
                 if (self.isFirstLeft()):
@@ -146,7 +146,7 @@ class Qubits(Hilbert):
         else:
             print("This session is not symbolic!")
 
-    def setSymbolValuesForListId(self, id, a, b):
+    def setSymbolValuesForListId(self, id, a, b):  # replace symbols with real values using a list of qubit ids
         if not self.getCuda():
             list_id = self.qubitsToList(id)
             for i in list_id:
@@ -163,7 +163,7 @@ class Qubits(Hilbert):
         else:
             print("This session is not symbolic!")
 
-    def setSymbolValue(self, id, symbol, value):
+    def setSymbolValue(self, id, symbol, value):  # replace symbols with real values by id of qubit
         if not self.getCuda():
             list_id = self.qubitsToList(id)
             for i in list_id:
@@ -195,6 +195,10 @@ class Qubits(Hilbert):
             print(Qubits.__last_operator.get())
 
 
+"""
+Allows to handle qubits without having to pass the id.
+In this class the quantum gates methods perform and record the type of operation
+"""
 class Qubit(Qubits, Gates, Circuit):
     def __init__(self, id = None):
         self.__id = self.addQubit(id)
@@ -216,6 +220,8 @@ class Qubit(Qubits, Gates, Circuit):
     def setSymbolValues(self, a, b):
         self.setSymbolValuesForListId([self.__id], a, b)
 
+    # One qubit gates
+    # .......................................
     def X(self):
         self.addOp("X", [self.__id])
         operator = super().X(self.__id)
@@ -286,6 +292,8 @@ class Qubit(Qubits, Gates, Circuit):
         operator = super().RZ(self.__id, phi)
         self.setOperation(operator)
 
+    # Two qubit gates
+    # .......................................
     def CX(self, control):
         self.addOp("CX", self.qubitsToList([control, self.__id]))
         operator = super().CX(control, self.__id)
@@ -354,22 +362,9 @@ class Qubit(Qubits, Gates, Circuit):
         operator = super().CU1(control, self.__id, _lambda)
         self.setOperation(operator)
 
-    def CCX(self, control1, control2):
-        self.addOp("CCX", self.qubitsToList([control1, control2, self.__id]))
-        operator = super().CCX(control1, control2, self.__id)
-        self.setOperation(operator)
-
-    def Toffoli(self, control1, control2):
-        self.CCX(control1, control2)
-
     def SWAP(self, target):
         self.addOp("SWAP", self.qubitsToList([self.__id, target]))
         operator = super().SWAP(self.__id, target)
-        self.setOperation(operator)
-
-    def Fredkin(self, target1, target2):
-        self.addOp("Fredkin", self.qubitsToList([self.__id, target1, target2]))
-        operator = super().Fredkin(self.__id, target1, target2)
         self.setOperation(operator)
 
     def Controlled(self, name, control, target, adjoint = False):
@@ -378,6 +373,26 @@ class Qubit(Qubits, Gates, Circuit):
         operator = functions[name](control[0], control[1], self.__id)
         self.setOperation(operator)
 
+    # Three qubit gates
+    # .......................................
+    def CCX(self, control1, control2):
+        self.addOp("CCX", self.qubitsToList([control1, control2, self.__id]))
+        operator = super().CCX(control1, control2, self.__id)
+        self.setOperation(operator)
+
+    def Toffoli(self, control1, control2):
+        self.CCX(control1, control2)
+
+    def Fredkin(self, target1, target2):
+        self.addOp("Fredkin", self.qubitsToList([self.__id, target1, target2]))
+        operator = super().Fredkin(self.__id, target1, target2)
+        self.setOperation(operator)
+
+
+"""
+Registering qubits allows you to perform the same operation on several quibts at the same time.
+In this class the quantum gates methods perform and record the type of operation.
+"""
 class QubitRegister(Qubit):
     def __init__(self, number = 3):
         self.__number = number

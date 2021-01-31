@@ -9,11 +9,18 @@ from cmath import *
 from logicqubit.hilbert import *
 
 
+"""
+In this class, the numerical definition of operators is performed,
+and the quantum gates methods performs the tensor product with the matrices in the correct order.
+It is necessary to enter the qubit id as an input parameter.
+"""
 class Gates(Hilbert):
 
     def __init__(self, number_of_qubits=1):
         self.__number_of_qubits = number_of_qubits
 
+    # basic matrices for the generation of operators
+    # .......................................
     def ID(self):
         M = Matrix([[1, 0], [0, 1]], self.getCuda())
         return M
@@ -34,6 +41,9 @@ class Gates(Hilbert):
         M = Matrix([[0, 0], [1, 0]], self.getCuda())  # |1><0|
         return M
 
+    # One qubit gates
+    # input parameters: target
+    # .......................................
     def X(self, target=1):
         M = Matrix([[0, 1], [1, 0]], self.getCuda())
         list = self.getOrdListSimpleGate(target, M)
@@ -136,6 +146,9 @@ class Gates(Hilbert):
         operator = self.kronProduct(list)
         return operator
 
+    # Two qubit gates
+    # input parameters: control and target
+    # .......................................
     def CX(self, control, target):
         M = Matrix([[0, 1], [1, 0]], self.getCuda())  # X
         list1, list2 = self.getOrdListCtrlGate(control, target, M)
@@ -235,6 +248,14 @@ class Gates(Hilbert):
         operator = self.kronProduct(list1) + self.kronProduct(list2)
         return operator
 
+    def SWAP(self, target1, target2):
+        list1, list2, list3, list4 = self.getOrdListSWAP(target1, target2)
+        operator = self.kronProduct(list1) + self.kronProduct(list2) + self.kronProduct(list3) + self.kronProduct(list4)
+        return operator
+
+    # Three qubit gates, which perform and record the operation
+    # input parameters: control1, control2, and target
+    # .......................................
     def CCX(self, control1, control2, target):
         Gate = Matrix([[0, 1], [1, 0]], self.getCuda()) - self.ID()
         list1, list2 = self.getOrdListCtrl2Gate(control1, control2, target, Gate)
@@ -244,11 +265,6 @@ class Gates(Hilbert):
     def Toffoli(self, control1, control2, target):
         return self.CCX(control1, control2, target)
 
-    def SWAP(self, target1, target2):
-        list1, list2, list3, list4 = self.getOrdListSWAP(target1, target2)
-        operator = self.kronProduct(list1) + self.kronProduct(list2) + self.kronProduct(list3) + self.kronProduct(list4)
-        return operator
-
     def Fredkin(self, control, target1, target2):
         list1, list2, list3, list4, list5, list6 = self.getOrdListFredkin(control, target1, target2)
         ID = self.kronProduct(list1)
@@ -257,6 +273,7 @@ class Gates(Hilbert):
         operator = ID + (P1_SWAP-P1_ID)
         return operator
 
+    # orders the matrices for the tensor product of 1 qubit operations
     def getOrdListSimpleGate(self, target, Gate):
         list = []
         if self.isFirstLeft():
@@ -270,6 +287,7 @@ class Gates(Hilbert):
                 list.append(Matrix([[1, 0], [0, 1]], self.getCuda()))
         return list
 
+    # orders the matrices for the tensor product of 2 qubits operations
     def getOrdListCtrlGate(self, control, target, Gate):
         list1 = []
         list2 = []
@@ -279,8 +297,8 @@ class Gates(Hilbert):
             plist = reversed(range(1, self.__number_of_qubits + 1))
         for i in plist:
             if i == control:
-                list1.append(self.P0())
-                list2.append(self.P1())
+                list1.append(self.P0())  # |0><0|
+                list2.append(self.P1())  # |1><1|
             elif i == target:
                 list1.append(self.ID())
                 list2.append(Gate)
@@ -289,6 +307,7 @@ class Gates(Hilbert):
                 list2.append(self.ID())
         return list1, list2
 
+    # orders the matrices for the tensor product of 3 qubits operations
     def getOrdListCtrl2Gate(self, control1, control2, target, Gate):
         list1 = []
         list2 = []
@@ -299,7 +318,7 @@ class Gates(Hilbert):
         for i in plist:
             if i == control1 or i == control2:
                 list1.append(self.ID())
-                list2.append(self.P1())
+                list2.append(self.P1())  # |1><1|
             elif i == target:
                 list1.append(self.ID())
                 list2.append(Gate)
@@ -308,6 +327,7 @@ class Gates(Hilbert):
                 list2.append(self.ID())
         return list1, list2
 
+    # orders the matrices for the tensor product of the SWAP gate operation
     def getOrdListSWAP(self, target1, target2):
         list1 = []
         list2 = []
@@ -319,15 +339,15 @@ class Gates(Hilbert):
             plist = reversed(range(1, self.__number_of_qubits + 1))
         for i in plist:
             if i == target1:
-                list1.append(self.P0())
-                list2.append(self.L0())
-                list3.append(self.L1())
-                list4.append(self.P1())
+                list1.append(self.P0())  # |0><0|
+                list2.append(self.L0())  # |0><1|
+                list3.append(self.L1())  # |1><0|
+                list4.append(self.P1())  # |1><1|
             elif i == target2:
-                list1.append(self.P0())
-                list2.append(self.L1())
-                list3.append(self.L0())
-                list4.append(self.P1())
+                list1.append(self.P0())  # |0><0|
+                list2.append(self.L1())  # |1><0|
+                list3.append(self.L0())  # |0><1|
+                list4.append(self.P1())  # |1><1|
             else:
                 list1.append(self.ID())
                 list2.append(self.ID())
@@ -335,7 +355,7 @@ class Gates(Hilbert):
                 list4.append(self.ID())
         return list1, list2, list3, list4
 
-
+    # orders the matrices for the tensor product of the Fredkin gate operation
     def getOrdListFredkin(self, control, target1, target2):
         list1 = []
         list2 = []
@@ -357,17 +377,17 @@ class Gates(Hilbert):
                 list6.append(self.P1())  # -ID
             elif i == target1:
                 list1.append(self.ID())
-                list2.append(self.P0())
-                list3.append(self.L0())
-                list4.append(self.L1())
-                list5.append(self.P1())
+                list2.append(self.P0())  # |0><0|
+                list3.append(self.L0())  # |0><1|
+                list4.append(self.L1())  # |1><0|
+                list5.append(self.P1())  # |1><1|
                 list6.append(self.ID())
             elif i == target2:
                 list1.append(self.ID())
-                list2.append(self.P0())
-                list3.append(self.L1())
-                list4.append(self.L0())
-                list5.append(self.P1())
+                list2.append(self.P0())  # |0><0|
+                list3.append(self.L1())  # |1><0|
+                list4.append(self.L0())  # |0><1|
+                list5.append(self.P1())  # |1><1|
                 list6.append(self.ID())
             else:
                 list1.append(self.ID())
