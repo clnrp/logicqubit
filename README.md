@@ -71,7 +71,11 @@ a.H()
 b.H()
 
 c.CCX(a,b) # and operation
+
+logicQuBit.Measure([c])
+logicQuBit.Plot()
 ```
+![](https://github.com/clnrp/logicqubit/blob/master/images/1620579394.png)
 
 # Other code samples
 
