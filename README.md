@@ -10,35 +10,35 @@
 
 **Table of Contents**
 
-[TOC]
+<!-- toc -->
 
-#Installation
+# Installation
 
 pip install logicqubit
 
-#Startup
+# Startup
 
 logicQuBit  = LogicQuBit(n_qubits, symbolic = True)
 
 Where n_qubits is the number of qubits, and symbolic defines whether the values a and b of the qubits will be symbolic or not, if the symbolic input is omitted the calculation will be numeric.
 
-##To instantiate a qubit
+## To instantiate a qubit
 
 q  = Qubit()
 
-##To instantiate a qubit register
+## To instantiate a qubit register
 
 reg = QubitRegister(num_qubits)
 
-#Operations
+# Operations
 
-##Operations on one qubit
+## Operations on one qubit
 
 The operation can be performed as q.Gate(parameters) or logicQuBit.Gate(id_qubit, parameters).
 
-##Operations on two qubits
+## Operations on two qubits
 
-In this case, the operation can be performed as q.Gate(control_qubit, parameters) or logicQuBit.Gate(control_qubit, target qubit, parameters).
+In this case, the operation can be performed as q.Gate(control_qubit, parameters) or logicQuBit.Gate(control_qubit, target_qubit, parameters).
 
 *The need for parameters depends on the type of gate.
 
@@ -48,7 +48,7 @@ Single-qubit gates: X, Y, Z, V, S, T, H, RX, RY, RZ, U, U1, U2, U3.
 Two-qubits gates: CX or CNOT, CY, CZ, CV, CS, CT, CRX, CRY, CRZ, CU, CU1, CU2, CU3, SWAP.
 Three-qubits gates: CCX or Toffoli, Fredkin.
 
-#Code sample
+# Code sample
 
 
 	from logicqubit.logic import *
