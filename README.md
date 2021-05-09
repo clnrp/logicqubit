@@ -15,6 +15,14 @@
   * [Operations on one qubit](#operations-on-one-qubit)
   * [Operations on two qubits](#operations-on-two-qubits)
   * [List of available gates](#list-of-available-gates)
+- [Measure](#Measure)
+  * [Measure the expected value of one or more qubits](#Measure-the-expected-value-of-one-or-more-qubits)
+  * [Measure one shot on a qubit](#Measure-one-shot-on-a-qubit)
+- [Plot graphs and print states](#Plot-graphs-and-print-states)
+  * [Plot expected values](#Plot-expected-values)
+  * [Plot the density matrix](#Plot-the-density-matrix)
+  * [Print the current status](#Print-the-current-status)
+  * [Print the current status as angles](#Print-the-current-status-as-angles)
 - [Code sample](#code-sample)
 - [Other code samples](#other-code-samples)
 
@@ -48,6 +56,7 @@ In this case, the operation can be performed as q.Gate(control_qubit, parameters
 
 *The need for parameters depends on the type of gate.
 
+
 ## List of available gates
 
 Single-qubit gates: X, Y, Z, V, S, T, H, RX, RY, RZ, U, U1, U2, U3.
@@ -55,6 +64,38 @@ Single-qubit gates: X, Y, Z, V, S, T, H, RX, RY, RZ, U, U1, U2, U3.
 Two-qubits gates: CX or CNOT, CY, CZ, CV, CS, CT, CRX, CRY, CRZ, CU, CU1, CU2, CU3, SWAP.
 
 Three-qubits gates: CCX or Toffoli, Fredkin.
+
+# Measure
+
+## Measure the expected value of one or more qubits
+
+result = logicQuBit.Measure([q1,q2,..,qn])
+
+## Measure one shot on a qubit
+
+value = logicQuBit.Measure_One(qubit)
+
+# Plot graphs and print states
+
+## Plot expected values
+
+logicQuBit.plot()
+
+Generate a graph of the values obtained by the Measure([...]).
+
+## Plot the density matrix
+
+logicQuBit.PlotDensityMatrix()
+
+## Print the current status
+
+logicQuBit.PrintState()
+
+## Print the current status as angles
+
+logicQuBit.getPsiAtAngles(degree=True)
+
+The degree variable defines whether the result will be displayed in degrees or radians.
 
 # Code sample
 
