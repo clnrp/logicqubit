@@ -1,5 +1,4 @@
-
-### Features
+# Features
 
 - Numerical and symbolic simulation of quantum algorithms
 - Plot states and current operation, density matrix and measurement graphs
@@ -7,10 +6,17 @@
 - Operations can be performed directly on the instantiated qubit object or using qubit indices.
 - Support GPU
 
-
-**Table of Contents**
-
-<!-- toc -->
+# Table of Contents
+- [Installation](#installation)
+- [Startup](#startup)
+  * [To instantiate a qubit](#to-instantiate-a-qubit)
+  * [To instantiate a qubit register](#to-instantiate-a-qubit-register)
+- [Operations](#operations)
+  * [Operations on one qubit](#operations-on-one-qubit)
+  * [Operations on two qubits](#operations-on-two-qubits)
+  * [List of available gates](#list-of-available-gates)
+- [Code sample](#code-sample)
+- [Other code samples](#other-code-samples)
 
 # Installation
 
@@ -45,22 +51,29 @@ In this case, the operation can be performed as q.Gate(control_qubit, parameters
 ## List of available gates
 
 Single-qubit gates: X, Y, Z, V, S, T, H, RX, RY, RZ, U, U1, U2, U3.
+
 Two-qubits gates: CX or CNOT, CY, CZ, CV, CS, CT, CRX, CRY, CRZ, CU, CU1, CU2, CU3, SWAP.
+
 Three-qubits gates: CCX or Toffoli, Fredkin.
 
 # Code sample
 
+```python
+from logicqubit.logic import *
 
-	from logicqubit.logic import *
+logicQuBit  = LogicQuBit(3)
 
-	logicQuBit  = LogicQuBit(3)
+a = Qubit()
+b = Qubit()
+c = Qubit()
 
-	a = Qubit()
-	b = Qubit()
-	c = Qubit()
+a.H()
+b.H()
 
-	a.H()
-	b.H()
+c.CCX(a,b) # and operation
+```
 
-	c.CCX(a,b) # and operation
+# Other code samples
+
+https://github.com/clnrp/logicqubit-algorithms
 
