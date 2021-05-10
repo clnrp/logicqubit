@@ -1,7 +1,7 @@
 # Features
 
 - Numerical and symbolic simulation of quantum algorithms
-- Plot states and current operation, density matrix and measurement graphs
+- Plot state and current operation, density matrix and measurement graphs
 - The state values can be represented as angles, which helps in the analysis of the fourrier quantum transform.
 - Operations can be performed directly on the instantiated qubit object or using qubit indices.
 - Support GPU
@@ -18,11 +18,11 @@
 - [Measure](#Measure)
   * [Measure the expected value of one or more qubits](#Measure-the-expected-value-of-one-or-more-qubits)
   * [Measure one shot on a qubit](#Measure-one-shot-on-a-qubit)
-- [Plot graphs and print states](#Plot-graphs-and-print-states)
+- [Plot graphs and print state](#Plot-graphs-and-print-state)
   * [Plot expected values](#Plot-expected-values)
   * [Plot the density matrix](#Plot-the-density-matrix)
-  * [Print the current status](#Print-the-current-status)
-  * [Print the current status as angles](#Print-the-current-status-as-angles)
+  * [Print the current state](#Print-the-current-state)
+  * [Print the current state as angles](#Print-the-current-state-as-angles)
 - [Code sample](#code-sample)
 - [Other code samples](#other-code-samples)
 
@@ -75,7 +75,7 @@ result = logicQuBit.Measure([q1,q2,..,qn])
 
 value = logicQuBit.Measure_One(qubit)
 
-# Plot graphs and print states
+# Plot graphs and print state
 
 ## Plot expected values
 
@@ -87,11 +87,11 @@ Generate a graph of the values obtained by the Measure([...]).
 
 logicQuBit.PlotDensityMatrix()
 
-## Print the current status
+## Print the current state
 
 logicQuBit.PrintState()
 
-## Print the current status as angles
+## Print the current state as angles
 
 logicQuBit.getPsiAtAngles(degree=True)
 
