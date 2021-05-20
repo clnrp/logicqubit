@@ -24,5 +24,5 @@ class PauliDecomposition:
         a = [[0]*4 for i in range(4)]
         for i, sigma_i in enumerate(self.sigma()):
             for j, sigma_j in enumerate(self.sigma()):
-                a[i][j] = (sigma_i.kron(sigma_j) * self.H).trace().get().item()
+                a[i][j] = 1/4*(sigma_i.kron(sigma_j) * self.H).trace().get().item()
         return a
