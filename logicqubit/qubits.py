@@ -110,6 +110,7 @@ class Qubits(Hilbert):
         angles = Qubits.__psi.getAngles()
         if(degree):
             angles = angles*180/pi
+            angles = (angles + 360)%360
         return angles
 
     def getPsiAdjoint(self):
