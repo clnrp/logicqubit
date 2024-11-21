@@ -317,7 +317,7 @@ class LogicQuBit(Qubits, Gates, Circuit):
                         value = sp.im(value)
                 mRho[id1][id2] = value
 
-        result = np.array(mRho, dtype=np.float)
+        result = np.array(mRho, dtype=float)
         fig = plt.figure(figsize=(5, 5), dpi=150)
         ax1 = fig.add_subplot(111, projection='3d')
 
