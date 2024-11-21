@@ -340,10 +340,10 @@ class LogicQuBit(Qubits, Gates, Circuit):
         dy = 0.5
         dz = zpos
 
-        ax1.w_xaxis.set_ticks(xpos + dx / 2.)
-        ax1.w_xaxis.set_ticklabels(xlabels)
-        ax1.w_yaxis.set_ticks(ypos + dy / 2.)
-        ax1.w_yaxis.set_ticklabels(ylabels)
+        ax1.set_xticks(xpos + dx / 2.)
+        ax1.set_xticklabels(xlabels)
+        ax1.set_yticks(ypos + dy / 2.)
+        ax1.set_yticklabels(ylabels)
 
         values = np.linspace(0.2, 1., xpos_mesh.ravel().shape[0])
         colors = cm.rainbow(values)
