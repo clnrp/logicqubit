@@ -106,6 +106,11 @@ class LogicQuBit(Qubits, Gates, Circuit):
     # Two qubit gates
     # input parameters: control and target
     # .......................................
+    def CH(self, control, target):
+        self.addOp("CH", self.qubitsToList([control, target]))
+        operator = super().CH(control, target)
+        self.setOperation(operator)
+
     def CX(self, control, target):
         self.addOp("CX", self.qubitsToList([control, target]))
         operator = super().CX(control, target)

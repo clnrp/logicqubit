@@ -7,6 +7,7 @@
 
 from IPython.display import display, Math, Latex
 
+from logicqubit.hilbert import *
 from logicqubit.gates import *
 from logicqubit.circuit import *
 from logicqubit.utils import *
@@ -294,6 +295,11 @@ class Qubit(Qubits, Gates, Circuit):
 
     # Two qubit gates
     # .......................................
+    def CH(self, control):
+        self.addOp("CH", self.qubitsToList([control, self.__id]))
+        operator = super().CH(control, self.__id)
+        self.setOperation(operator)
+
     def CX(self, control):
         self.addOp("CX", self.qubitsToList([control, self.__id]))
         operator = super().CX(control, self.__id)

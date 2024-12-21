@@ -149,6 +149,12 @@ class Gates(Hilbert):
     # Two qubit gates
     # input parameters: control and target
     # .......................................
+    def CH(self, control, target):
+        M = Matrix([[1, 1], [1, -1]], self.getCuda()) * (1 / sqrt(2)) # H
+        list1, list2 = self.getOrdListCtrlGate(control, target, M)
+        operator = self.kronProduct(list1) + self.kronProduct(list2)
+        return operator
+    
     def CX(self, control, target):
         M = Matrix([[0, 1], [1, 0]], self.getCuda())  # X
         list1, list2 = self.getOrdListCtrlGate(control, target, M)
