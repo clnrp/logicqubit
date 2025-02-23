@@ -1,4 +1,5 @@
-README.rst
+LICENSE
+README.md
 setup.py
 logicqubit/__init__.py
 logicqubit/__main__.py

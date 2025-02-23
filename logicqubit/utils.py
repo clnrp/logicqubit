@@ -18,7 +18,7 @@ class Utils:
 
     @staticmethod
     def texfix(value, number, left=False):
-        tex = sp.latex(value).replace(' \cdot ', '')
+        tex = sp.latex(value).replace(r' \cdot ', '')
         tex = Utils.textSymbolfix(tex, number, left)
         return tex
 

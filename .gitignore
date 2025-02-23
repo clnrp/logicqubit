@@ -5,3 +5,4 @@ dist/
 logicqubit.egg-info/
 *.pyc
 venv/
+.pypirc

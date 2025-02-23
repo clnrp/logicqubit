@@ -23,7 +23,7 @@ class LogicQuBit(Qubits, Gates, Circuit):
     def __init__(self, number_of_qubits = 3, **kwargs):
         symbolic = kwargs.get('symbolic', False)
         first_left = kwargs.get('first_left', True)  # qubit 1 is the left most
-        super().setCuda(not symbolic)
+        super().setNumeric(not symbolic)
         super().setFirstLeft(first_left)
         super().setNumberOfQubits(number_of_qubits)
         Qubits.__init__(self)
@@ -226,7 +226,7 @@ class LogicQuBit(Qubits, Gates, Circuit):
     # choose a state among many others
     def get_shot(self, measured, shots):
         max_set = shots*100
-        if not self.getCuda():
+        if not self.getIsNumeric():
             list_all = [int(value * max_set) * [i] for i, value in enumerate(measured)]
         else:
             list_all = [int(value.real * max_set) * [i] for i, value in enumerate(measured)]
@@ -277,8 +277,6 @@ class LogicQuBit(Qubits, Gates, Circuit):
                 tlist.reverse()
             M = self.kronProduct(tlist)
             measure = (density_m * M).get().trace()  # expected value
-            if self.getCuda() and cupy_is_available:
-                measure = measure.get().item().real
             result.append(measure)
         self.setMeasuredValues(result)
         return result
@@ -308,7 +306,7 @@ class LogicQuBit(Qubits, Gates, Circuit):
         rho = self.DensityMatrix().get()
         for id1 in range(2**size_p):
             for id2 in range(2**size_p):
-                if self.getCuda():
+                if self.getIsNumeric():
                     value = rho[id1][id2]
                     if(not imaginary):
                         value = value.item().real

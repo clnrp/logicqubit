@@ -19,7 +19,7 @@ class Qubits(Hilbert):
         Qubits.__used_qubits = []
         Qubits.__measured_qubits = []
         Qubits.__measured_values = []
-        if self.getCuda():
+        if self.getIsNumeric():
             Qubits.__psi = self.kronProduct([self.ket(0) for i in range(self.getNumberOfQubits())])
         else:
             if self.isFirstLeft():  # qubit 1 is the first on the left
@@ -100,7 +100,7 @@ class Qubits(Hilbert):
         size_p = self.getQubitsNumber()
         size = 2 ** size_p
         labels = ["{0:b}".format(i).zfill(size_p) for i in range(size)]
-        if not self.getCuda():
+        if not self.getIsNumeric():
             value_l = [Utils.textSymbolfix(str(value), self.getQubitsNumber(), self.isFirstLeft()) for value in Qubits.__psi.get()]
             dictPsi = {label: value_l[i] for i, label in enumerate(labels)}
         else:
@@ -132,7 +132,7 @@ class Qubits(Hilbert):
         return result
 
     def setSymbolValuesForAll(self, a, b):  # replace all symbols with real values
-        if not self.getCuda():
+        if not self.getIsNumeric():
             for i in range(1, self.getNumberOfQubits()+1):
                 if (self.isFirstLeft()):
                     Qubits.__psi = Matrix(Qubits.__psi.get().subs(str(i)+"a"+str(i)+"_0", a), False)
@@ -148,7 +148,7 @@ class Qubits(Hilbert):
             print("This session is not symbolic!")
 
     def setSymbolValuesForListId(self, id, a, b):  # replace symbols with real values using a list of qubit ids
-        if not self.getCuda():
+        if not self.getIsNumeric():
             list_id = self.qubitsToList(id)
             for i in list_id:
                 if (self.isFirstLeft()):
@@ -165,7 +165,7 @@ class Qubits(Hilbert):
             print("This session is not symbolic!")
 
     def setSymbolValue(self, id, symbol, value):  # replace symbols with real values by id of qubit
-        if not self.getCuda():
+        if not self.getIsNumeric():
             list_id = self.qubitsToList(id)
             for i in list_id:
                 if self.isFirstLeft():
@@ -178,7 +178,7 @@ class Qubits(Hilbert):
             print("This session is not symbolic!")
 
     def PrintState(self, simple = False):
-        if self.getCuda():
+        if self.getIsNumeric():
             value = Utils.vec2tex(Qubits.__psi.get())
         else:
             value = Utils.texfix(Qubits.__psi.get(), self.getNumberOfQubits(), self.isFirstLeft())

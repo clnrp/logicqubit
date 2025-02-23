@@ -7,14 +7,6 @@
 
 import numpy as np
 from sympy.physics.quantum import TensorProduct
-
-cupy_is_available = True
-try:
-    import cupy as cp
-except Exception as ex:
-    cupy_is_available = False
-    print("Cuda is not available!")
-
 from logicqubit.utils import *
 
 """
@@ -22,22 +14,22 @@ Hilbert space
 """
 class Hilbert():
     __number_of_qubits = 1
-    __cuda = True
+    __numeric = True
     __first_left = True
 
     @staticmethod
     def ket(value):  # get ket state
-        result = Matrix([[Utils.onehot(i, value)] for i in range(2)], Hilbert.__cuda)
+        result = Matrix([[Utils.onehot(i, value)] for i in range(2)], Hilbert.__numeric)
         return result
 
     @staticmethod
     def bra(value):  # get bra state
-        result = Matrix([Utils.onehot(i, value) for i in range(2)], Hilbert.__cuda)
+        result = Matrix([Utils.onehot(i, value) for i in range(2)], Hilbert.__numeric)
         return result
 
     @staticmethod
     def getState():  # get state of all qubits
-        if Hilbert.getCuda():
+        if Hilbert.getIsNumeric():
             state = Hilbert.kronProduct([Hilbert.ket(0) for i in range(Hilbert.getNumberOfQubits())])
         else:
             if Hilbert.isFirstLeft():
@@ -77,12 +69,12 @@ class Hilbert():
         return Hilbert.__number_of_qubits
 
     @staticmethod
-    def setCuda(cuda):
-        Hilbert.__cuda = cuda
+    def setNumeric(numeric):
+        Hilbert.__numeric = numeric
 
     @staticmethod
-    def getCuda():
-        return Hilbert.__cuda
+    def getIsNumeric():
+        return Hilbert.__numeric
 
     @staticmethod
     def setFirstLeft(value):
@@ -98,15 +90,12 @@ Wrap methods from the numpy, cupy and sympy libraries.
 """
 class Matrix:
 
-    def __init__(self, matrix, cuda=True):
+    def __init__(self, matrix, numeric=True):
         self.__matrix = matrix
-        self.__cuda = cuda
+        self.__numeric = numeric
         if isinstance(matrix, list):  # if it's a list
-            if self.__cuda:
-                if cupy_is_available:
-                    self.__matrix = cp.array(matrix)  # create matrix with cupy
-                else:
-                    self.__matrix = np.array(matrix)  # create matrix with numpy
+            if self.__numeric:
+                self.__matrix = np.array(matrix)  # create matrix with numpy
             else:
                 self.__matrix = sp.Matrix(matrix)  # create matrix with sympy
         else:
@@ -117,29 +106,26 @@ class Matrix:
 
     def __add__(self, other):  # sum of the matrices
         result = self.__matrix + other.get()
-        return Matrix(result, self.__cuda)
+        return Matrix(result, self.__numeric)
 
     def __sub__(self, other):  # subtraction of the matrices
         result = self.__matrix - other.get()
-        return Matrix(result, self.__cuda)
+        return Matrix(result, self.__numeric)
 
     def __mul__(self, other):  # product of the matrices
         if isinstance(other, Matrix):
             other = other.get()
-            if self.__cuda:
-                if cupy_is_available:
-                    result = cp.dot(self.__matrix, other)  # for cupy matrix
-                else:
-                    result = np.dot(self.__matrix, other)  # for numpy matrix
+            if self.__numeric:
+                result = np.dot(self.__matrix, other)  # for numpy matrix
             else:
                 result = self.__matrix * other
         else:
             result = self.__matrix * other
-        return Matrix(result, self.__cuda)
+        return Matrix(result, self.__numeric)
 
     def __truediv__(self, other):
         result = self.__matrix * (1./other)
-        return Matrix(result, self.__cuda)
+        return Matrix(result, self.__numeric)
 
     def __eq__(self, other):
         return self.__matrix == other.get()
@@ -148,36 +134,30 @@ class Matrix:
         return str(self.__matrix)
 
     def kron(self, other):  # Kronecker product
-        if self.__cuda:
-            if cupy_is_available:
-                result = cp.kron(self.__matrix, other.get())
-            else:
-                result = np.kron(self.__matrix, other.get())
+        if self.__numeric:
+            result = np.kron(self.__matrix, other.get())
         else:
             result = TensorProduct(self.__matrix, other.get())
-        return Matrix(result, self.__cuda)
+        return Matrix(result, self.__numeric)
 
     def get(self):
         return self.__matrix
 
     def getAngles(self):  # converts state coefficients into angles
         angles = []
-        if self.__cuda:
-            if cupy_is_available:
-                angles = cp.angle(self.__matrix)
-            else:
-                angles = np.angle(self.__matrix)
+        if self.__numeric:
+            angles = np.angle(self.__matrix)
         else:
             print("This session is symbolic!")
         return angles
 
     def trace(self):  # get matrix trace
         result = self.__matrix.trace()
-        return Matrix(result, self.__cuda)
+        return Matrix(result, self.__numeric)
 
     def adjoint(self):  # get matrix adjoint
-        if self.__cuda:
+        if self.__numeric:
             result = self.__matrix.transpose().conj()
         else:
             result = self.__matrix.transpose().conjugate()
-        return Matrix(result, self.__cuda)
+        return Matrix(result, self.__numeric)

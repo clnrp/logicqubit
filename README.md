@@ -4,7 +4,6 @@
 - Plot state and current operation, density matrix and measurement graphs
 - The state values can be represented as angles, which helps in the analysis of the fourrier quantum transform.
 - Operations can be performed directly on the instantiated qubit object or using qubit indices.
-- Support GPU
 
 # Table of Contents
 - [Installation](#installation)
